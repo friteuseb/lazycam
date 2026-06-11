@@ -100,6 +100,18 @@
   .card h3{font-size:1.1rem;margin-bottom:6px}
   .card p{color:var(--subtext);font-size:.94rem}
 
+  /* story */
+  .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:42px}
+  .pain{display:flex;gap:14px;align-items:flex-start;background:var(--mantle);
+    border:1px solid var(--surface0);border-radius:14px;padding:22px}
+  .pain .pico{font-size:1.6rem;flex:none;line-height:1}
+  .pain b{font-size:1.02rem}
+  .pain p{color:var(--subtext);font-size:.9rem;margin-top:4px}
+  .punch{text-align:center;font-size:clamp(1.15rem,2.6vw,1.5rem);color:var(--subtext);
+    max-width:700px;margin:0 auto;line-height:1.55}
+  .punch strong{color:var(--text);background:linear-gradient(120deg,var(--pink),var(--mauve));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+
   /* install */
   .install{background:var(--mantle);border-top:1px solid var(--surface0);border-bottom:1px solid var(--surface0)}
   .steps{display:grid;gap:16px;max-width:760px;margin:0 auto}
@@ -129,6 +141,7 @@
 <nav><div class="wrap">
   <a class="brand" href="#"><img src="icon.svg" alt="">lazycam</a>
   <div class="nav-links">
+    <a href="#story">Histoire</a>
     <a href="#features">Fonctions</a>
     <a href="#install">Installation</a>
     <a href="https://github.com/friteuseb/lazycam">GitHub ↗</a>
@@ -165,6 +178,27 @@
     </div>
   </div>
 </div></header>
+
+<section id="story"><div class="wrap">
+  <h2 class="sec-title">Pourquoi lazycam existe</h2>
+  <p class="sec-sub">Je voulais juste filmer mon écran pour des tutos. Étonnamment compliqué sous Linux.</p>
+  <div class="story">
+    <div class="pain"><span class="pico">🏗️</span><div>
+      <b>OBS Studio</b>
+      <p>Une usine à gaz pour ce simple besoin — et de plus en plus laissé à l'abandon.</p>
+    </div></div>
+    <div class="pain"><span class="pico">🌊</span><div>
+      <b>Les autres outils</b>
+      <p>La plupart ne fonctionnent pas, ou mal, sous Wayland — pourtant le présent de Linux.</p>
+    </div></div>
+    <div class="pain"><span class="pico">🪟</span><div>
+      <b>Bandicam</b>
+      <p>J'adorais sa simplicité, ce côté « j'appuie, ça filme ». Mais il n'existe que sous Windows.</p>
+    </div></div>
+  </div>
+  <p class="punch">Alors j'ai construit celui qui me manquait :<br>
+    <strong>la simplicité de Bandicam, sur Linux, qui marche vraiment sous Wayland.</strong></p>
+</div></section>
 
 <section id="features"><div class="wrap">
   <h2 class="sec-title">Pensé pour les tutos</h2>

@@ -34,8 +34,15 @@ Surcouche à [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/
 
 ## Pourquoi lazycam ?
 
-Les bons enregistreurs Linux existent (OBS, Kooha, GPU Screen Recorder…), mais
-aucun ne fait *exactement* le bon geste pour faire des tutos vite fait :
+Je voulais juste filmer mon écran pour des tutos. Étonnamment compliqué sous Linux :
+**OBS Studio** est une usine à gaz pour ce besoin (et de plus en plus délaissé), la
+plupart des **autres outils** ne marchent pas correctement sous **Wayland**, et
+**Bandicam** — dont j'adorais la simplicité « j'appuie, ça filme » — n'existe que
+sous Windows. Alors j'ai construit celui qui me manquait : la simplicité de
+Bandicam, sur Linux, qui marche vraiment sous Wayland.
+
+Concrètement, aucun des bons enregistreurs (OBS, Kooha, GPU Screen Recorder…) ne
+fait *exactement* le bon geste pour faire des tutos vite fait :
 
 - **Une seule touche** pour démarrer **et** arrêter (`Super+R`). Pas de fenêtre à viser.
 - **Micro choisi automatiquement** selon un **ordre de préférence** : micro USB
