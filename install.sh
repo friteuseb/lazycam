@@ -60,7 +60,7 @@ fi
 # ───────────────────────── 3. Copie des scripts ───────────────────────────
 title "3/5  Installation des scripts → $BIN_DIR"
 mkdir -p "$BIN_DIR"
-for f in gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh; do
+for f in gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcuts; do
     install -m 0755 "$SRC_DIR/$f" "$BIN_DIR/$f" && c_ok "$f"
 done
 
@@ -95,50 +95,7 @@ fi
 
 # ───────────────────────── 5. Raccourcis GNOME ────────────────────────────
 title "5/5  Raccourcis clavier GNOME"
-SCHEMA=org.gnome.settings-daemon.plugins.media-keys
-LISTKEY=custom-keybindings
-BASE=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
-
-# tableau des chemins de raccourcis custom existants
-raw="$(gsettings get "$SCHEMA" "$LISTKEY")"
-existing=()
-if [ "$raw" != "@as []" ] && [ "$raw" != "[]" ]; then
-    tmp="${raw#[}"; tmp="${tmp%]}"
-    IFS=',' read -ra parts <<< "$tmp"
-    for p in "${parts[@]}"; do
-        p="${p//\'/}"; p="${p// /}"; [ -n "$p" ] && existing+=("$p")
-    done
-fi
-
-# ensure_kb <nom> <commande> <binding> : réutilise le slot si la commande
-# existe déjà, sinon en crée un nouveau. Ne crée jamais de doublon.
-ensure_kb() {
-    local name="$1" cmd="$2" bind="$3" path="" p rs i=0
-    for p in ${existing[@]+"${existing[@]}"}; do
-        rs="$SCHEMA.custom-keybinding:$p"
-        if [ "$(gsettings get "$rs" command 2>/dev/null)" = "'$cmd'" ]; then path="$p"; break; fi
-    done
-    if [ -z "$path" ]; then
-        while printf '%s\n' ${existing[@]+"${existing[@]}"} | grep -q "/custom$i/\$"; do i=$((i+1)); done
-        path="$BASE/custom$i/"; existing+=("$path")
-    fi
-    rs="$SCHEMA.custom-keybinding:$path"
-    gsettings set "$rs" name "$name"
-    gsettings set "$rs" command "$cmd"
-    gsettings set "$rs" binding "$bind"
-    c_ok "$bind → $name"
-}
-
-ensure_kb "lazycam : enregistrer (start/stop)" "$BIN_DIR/gsr-toggle.sh" "<Super>r"
-ensure_kb "lazycam : pause / reprise"          "$BIN_DIR/gsr-pause.sh"  "<Super><Shift>r"
-
-# réécrit le tableau des chemins
-arr="["; n="${#existing[@]}"
-for idx in "${!existing[@]}"; do
-    arr+="'${existing[$idx]}'"; [ "$idx" -lt "$((n-1))" ] && arr+=", "
-done
-arr+="]"
-gsettings set "$SCHEMA" "$LISTKEY" "$arr"
+"$BIN_DIR/lazycam-shortcuts" | sed 's/^/  /'
 
 title "Terminé ✓"
 cat <<EOF

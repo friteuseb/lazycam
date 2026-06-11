@@ -2,4 +2,7 @@
 *.mp4
 *.flac
 *.state
-# rien d'autre : ce repo ne contient que des scripts
+# artefacts de build (.deb) — vont sur les releases GitHub, pas dans le code
+dist/
+__pycache__/
+*.pyc

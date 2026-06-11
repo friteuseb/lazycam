@@ -16,12 +16,18 @@ APP_ID = "com.dec05eba.gpu_screen_recorder"
 CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "lazycam"
 CONFIG_PATH = CONFIG_DIR / "config.json"
 
-# Recherche des scripts : version déployée d'abord, sinon le repo voisin.
+# Recherche des scripts gsr-* : install utilisateur, système (.deb), puis repo.
 def _scripts_dir() -> Path:
-    deployed = Path.home() / ".local" / "bin"
-    if (deployed / "gsr-toggle.sh").exists():
-        return deployed
-    return Path(__file__).resolve().parent.parent / "bin"
+    candidates = [
+        Path.home() / ".local" / "bin",          # install.sh (utilisateur)
+        Path("/usr/bin"),                          # paquet .deb
+        Path("/usr/local/bin"),                    # install manuel système
+        Path(__file__).resolve().parent.parent / "bin",  # dépôt cloné
+    ]
+    for d in candidates:
+        if (d / "gsr-toggle.sh").exists():
+            return d
+    return candidates[0]
 
 SCRIPTS_DIR = _scripts_dir()
 
@@ -168,6 +174,33 @@ def is_recording() -> bool:
 def toggle_recording() -> None:
     subprocess.Popen([str(SCRIPTS_DIR / "gsr-toggle.sh")],
                      start_new_session=True)
+
+
+_MEDIA_SCHEMA = "org.gnome.settings-daemon.plugins.media-keys"
+
+
+def shortcuts_active() -> bool:
+    """Vrai si le raccourci Super+R (gsr-toggle) est déjà posé."""
+    try:
+        base = subprocess.run(
+            ["gsettings", "get", _MEDIA_SCHEMA, "custom-keybindings"],
+            capture_output=True, text=True, timeout=5).stdout.strip()
+        for p in re.findall(r"'([^']+)'", base):
+            cmd = subprocess.run(
+                ["gsettings", "get", f"{_MEDIA_SCHEMA}.custom-keybinding:{p}", "command"],
+                capture_output=True, text=True, timeout=5).stdout
+            if "gsr-toggle.sh" in cmd:
+                return True
+    except Exception:
+        pass
+    return False
+
+
+def set_shortcuts(remove: bool = False) -> None:
+    """Pose ou retire les raccourcis via la commande lazycam-shortcuts."""
+    exe = SCRIPTS_DIR / "lazycam-shortcuts"
+    base = [str(exe)] if exe.exists() else ["lazycam-shortcuts"]
+    subprocess.run(base + (["--remove"] if remove else []), timeout=15)
 
 
 def have_showmethekey() -> bool:

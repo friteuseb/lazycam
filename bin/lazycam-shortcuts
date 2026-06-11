@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#
+# lazycam-shortcuts [--remove]
+#   Pose (ou retire avec --remove) les raccourcis GNOME de lazycam :
+#     Super+R       → gsr-toggle.sh  (start/stop)
+#     Super+Shift+R → gsr-pause.sh   (pause/reprise)
+#   Idempotent : réutilise les slots existants, ne crée jamais de doublon, et
+#   ne touche pas aux autres raccourcis. À lancer DANS la session utilisateur
+#   (dconf par-utilisateur) — pas depuis un postinst root.
+#
+set -u
+
+# dossier où vivent gsr-toggle.sh / gsr-pause.sh (= dossier de ce script)
+SELF_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+TOGGLE="$SELF_DIR/gsr-toggle.sh"
+PAUSE="$SELF_DIR/gsr-pause.sh"
+
+SCHEMA=org.gnome.settings-daemon.plugins.media-keys
+LISTKEY=custom-keybindings
+BASE=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
+
+command -v gsettings >/dev/null || { echo "gsettings introuvable (hors GNOME ?)" >&2; exit 1; }
+
+# --- lecture du tableau des raccourcis custom existants ---
+raw="$(gsettings get "$SCHEMA" "$LISTKEY")"
+existing=()
+if [ "$raw" != "@as []" ] && [ "$raw" != "[]" ]; then
+    tmp="${raw#[}"; tmp="${tmp%]}"
+    IFS=',' read -ra parts <<< "$tmp"
+    for p in "${parts[@]}"; do
+        p="${p//\'/}"; p="${p// /}"; [ -n "$p" ] && existing+=("$p")
+    done
+fi
+
+write_array() {
+    local arr="[" n="${#existing[@]}" idx
+    for idx in "${!existing[@]}"; do
+        arr+="'${existing[$idx]}'"; [ "$idx" -lt "$((n-1))" ] && arr+=", "
+    done
+    arr+="]"
+    gsettings set "$SCHEMA" "$LISTKEY" "$arr"
+}
+
+if [ "${1:-}" = "--remove" ]; then
+    kept=()
+    for p in ${existing[@]+"${existing[@]}"}; do
+        cmd="$(gsettings get "$SCHEMA.custom-keybinding:$p" command 2>/dev/null)"
+        case "$cmd" in
+            *"/gsr-toggle.sh'"|*"/gsr-pause.sh'")
+                gsettings reset-recursively "$SCHEMA.custom-keybinding:$p" 2>/dev/null
+                echo "retiré : $cmd" ;;
+            *) kept+=("$p") ;;
+        esac
+    done
+    existing=("${kept[@]+"${kept[@]}"}")
+    write_array
+    echo "Raccourcis lazycam retirés."
+    exit 0
+fi
+
+# ensure_kb <nom> <commande> <binding>
+ensure_kb() {
+    local name="$1" cmd="$2" bind="$3" path="" p rs i=0
+    for p in ${existing[@]+"${existing[@]}"}; do
+        rs="$SCHEMA.custom-keybinding:$p"
+        [ "$(gsettings get "$rs" command 2>/dev/null)" = "'$cmd'" ] && { path="$p"; break; }
+    done
+    if [ -z "$path" ]; then
+        while printf '%s\n' ${existing[@]+"${existing[@]}"} | grep -q "/custom$i/\$"; do i=$((i+1)); done
+        path="$BASE/custom$i/"; existing+=("$path")
+    fi
+    rs="$SCHEMA.custom-keybinding:$path"
+    gsettings set "$rs" name "$name"
+    gsettings set "$rs" command "$cmd"
+    gsettings set "$rs" binding "$bind"
+    echo "$bind → $name"
+}
+
+ensure_kb "lazycam : enregistrer (start/stop)" "$TOGGLE" "<Super>r"
+ensure_kb "lazycam : pause / reprise"          "$PAUSE"  "<Super><Shift>r"
+write_array
+echo "Raccourcis lazycam activés (Super+R, Super+Shift+R)."

@@ -29,6 +29,27 @@ Sortie propre dans `~/Videos/tuto_AAAAMMJJ_HHMMSS.mp4`, prête à publier.
 
 ## Installation
 
+### Paquet Debian / Ubuntu (.deb)
+
+```bash
+sudo apt install ./lazycam_0.1.0_all.deb
+```
+
+Puis, côté utilisateur (une fois) :
+
+```bash
+flatpak install -y flathub com.dec05eba.gpu_screen_recorder   # moteur de capture
+lazycam-shortcuts                                             # activer Super+R
+```
+
+> Les raccourcis Super+R sont du dconf **par-utilisateur** : un paquet `.deb`
+> (postinst root) ne peut pas les poser pour toi, d'où la commande
+> `lazycam-shortcuts` (ou le bouton « Activer » dans `lazycam-config`).
+
+Construire le paquet soi-même : `./packaging/build-deb.sh` → `dist/`.
+
+### Depuis les sources (git)
+
 ```bash
 git clone https://github.com/friteuseb/lazycam.git
 cd lazycam

@@ -121,6 +121,7 @@ class LazycamWindow(Adw.ApplicationWindow):
         self._build_audio_group()
         self._build_rec_group()
         self._build_tuto_group()
+        self._build_shortcuts_group()
 
         self._update_rec_btn()
         GLib.timeout_add_seconds(2, self._poll_rec)
@@ -279,6 +280,38 @@ class LazycamWindow(Adw.ApplicationWindow):
         clicks.set_active(bool(self.cfg.get("show_clicks")))
         clicks.set_sensitive(False)
         g.add(clicks)
+
+    # ----- groupe Raccourcis clavier -----
+    def _build_shortcuts_group(self):
+        g = Adw.PreferencesGroup(title="Raccourcis clavier")
+        self.page.add(g)
+        self.sc_row = Adw.ActionRow(
+            title="Super + R  ·  Super + Shift + R",
+            subtitle="Démarrer/arrêter  ·  Pause/reprise")
+        self.sc_btn = Gtk.Button(valign=Gtk.Align.CENTER)
+        self.sc_btn.connect("clicked", self._on_shortcuts)
+        self.sc_row.add_suffix(self.sc_btn)
+        g.add(self.sc_row)
+        self._update_sc_btn()
+
+    def _update_sc_btn(self):
+        if B.shortcuts_active():
+            self.sc_btn.set_label("Désactiver")
+            self.sc_btn.remove_css_class("suggested-action")
+            self.sc_row.set_subtitle("Actifs · Démarrer/arrêter · Pause/reprise")
+        else:
+            self.sc_btn.set_label("Activer")
+            self.sc_btn.add_css_class("suggested-action")
+            self.sc_row.set_subtitle("Inactifs — clique pour les poser")
+
+    def _on_shortcuts(self, btn):
+        active = B.shortcuts_active()
+        try:
+            B.set_shortcuts(remove=active)
+            self._toast("Raccourcis désactivés." if active else "Raccourcis activés ✓")
+        except Exception:
+            self._toast("Échec : lance « lazycam-shortcuts » en terminal.")
+        self._update_sc_btn()
 
     # ───────────────────────── helpers UI ─────────────────────────
     def _combo(self, title, options, active, on_change):
