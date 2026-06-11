@@ -69,7 +69,7 @@ Ajoute le dépôt une fois, puis `apt install` et les mises à jour suivent avec
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://lazycam.coconweb.fr/apt/lazycam.gpg | sudo tee /etc/apt/keyrings/lazycam.gpg >/dev/null
-echo "deb [signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
+echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
 sudo apt update && sudo apt install lazycam
 ```
 

@@ -221,7 +221,7 @@
       <h4>Ajouter le dépôt lazycam <span style="color:var(--muted);font-weight:400">(une fois)</span></h4>
       <div class="code"><button class="cp">copier</button>sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://lazycam.coconweb.fr/apt/lazycam.gpg | sudo tee /etc/apt/keyrings/lazycam.gpg >/dev/null
-echo "deb [signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
+echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
 sudo apt update</div>
     </div></div>
     <div class="step"><div class="num">2</div><div class="body">
