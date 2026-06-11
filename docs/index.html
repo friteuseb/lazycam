@@ -155,8 +155,7 @@
     <kbd>Super</kbd>+<kbd>R</kbd>. Tu réappuies, c'est monté. Pour Ubuntu / GNOME.</p>
   <p class="sub">Micro et écran choisis automatiquement · pause/reprise · montage auto</p>
   <div class="cta">
-    <a class="btn btn-primary" href="https://github.com/friteuseb/lazycam/releases/download/v0.1.0/lazycam_0.1.0_all.deb">
-      ⬇ Télécharger le .deb <small>· Ubuntu/Debian</small></a>
+    <a class="btn btn-primary" href="#install">⬇ Installer <small>· Ubuntu/Debian</small></a>
     <a class="btn btn-ghost" href="https://github.com/friteuseb/lazycam">Voir sur GitHub</a>
   </div>
 
@@ -215,22 +214,31 @@
 
 <section id="install" class="install"><div class="wrap">
   <h2 class="sec-title">Installation</h2>
-  <p class="sec-sub">Trois commandes sur Ubuntu / Debian (GNOME).</p>
+  <p class="sec-sub">Sur Ubuntu / Debian (GNOME). Ensuite, les mises à jour suivent
+    avec <code>apt upgrade</code> comme le reste du système.</p>
   <div class="steps">
     <div class="step"><div class="num">1</div><div class="body">
-      <h4>Installer le paquet</h4>
-      <div class="code"><button class="cp">copier</button>sudo apt install ./lazycam_0.1.0_all.deb</div>
+      <h4>Ajouter le dépôt lazycam <span style="color:var(--muted);font-weight:400">(une fois)</span></h4>
+      <div class="code"><button class="cp">copier</button>sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://lazycam.coconweb.fr/apt/lazycam.gpg | sudo tee /etc/apt/keyrings/lazycam.gpg >/dev/null
+echo "deb [signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
+sudo apt update</div>
     </div></div>
     <div class="step"><div class="num">2</div><div class="body">
-      <h4>Installer le moteur de capture (une fois)</h4>
-      <div class="code"><button class="cp">copier</button>flatpak install -y flathub com.dec05eba.gpu_screen_recorder</div>
+      <h4>Installer lazycam</h4>
+      <div class="code"><button class="cp">copier</button>sudo apt install lazycam</div>
     </div></div>
     <div class="step"><div class="num">3</div><div class="body">
-      <h4>Activer le raccourci Super+R</h4>
-      <div class="code"><button class="cp">copier</button>lazycam-shortcuts</div>
-      <p class="note">Ou clique « Activer » dans <code>lazycam-config</code>. C'est tout — appuie sur Super+R.</p>
+      <h4>Moteur de capture + raccourci <span style="color:var(--muted);font-weight:400">(une fois)</span></h4>
+      <div class="code"><button class="cp">copier</button>flatpak install -y flathub com.dec05eba.gpu_screen_recorder
+lazycam-shortcuts</div>
+      <p class="note">Le raccourci s'active aussi via le bouton « Activer » dans <code>lazycam-config</code>.
+        C'est tout — appuie sur <kbd>Super</kbd>+<kbd>R</kbd>.</p>
     </div></div>
   </div>
+  <p class="note" style="text-align:center;margin-top:26px">
+    Tu préfères sans dépôt ? <a href="https://github.com/friteuseb/lazycam/releases/latest">Télécharge le <code>.deb</code></a>
+    et <code>sudo apt install ./lazycam_*.deb</code>.</p>
 </div></section>
 
 <footer><div class="wrap">

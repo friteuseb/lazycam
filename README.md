@@ -61,14 +61,30 @@ Sortie propre dans `~/Videos/tuto_AAAAMMJJ_HHMMSS.mp4`, prête à publier.
 lazycam est un **outil d'intégration système** (il pilote d'autres programmes et
 pose des raccourcis GNOME) : il s'installe donc sur l'hôte, pas en bac à sable.
 
-### Option A — paquet Debian / Ubuntu (`.deb`)
+### Option A — dépôt APT *(recommandé)*
+
+Ajoute le dépôt une fois, puis `apt install` et les mises à jour suivent avec
+`apt upgrade` :
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://lazycam.coconweb.fr/apt/lazycam.gpg | sudo tee /etc/apt/keyrings/lazycam.gpg >/dev/null
+echo "deb [signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
+sudo apt update && sudo apt install lazycam
+```
+
+### Option B — paquet `.deb` direct
+
+[Télécharge le `.deb`](https://github.com/friteuseb/lazycam/releases/latest) puis :
 
 ```bash
 sudo apt install ./lazycam_0.1.0_all.deb
 ```
 
-`apt` installe automatiquement toutes les dépendances système. Ensuite, **deux
-gestes côté utilisateur** (le `.deb` tourne en root et ne peut pas les faire) :
+### Après l'installation (Option A ou B)
+
+`apt` tire toutes les dépendances système. Restent **deux gestes côté
+utilisateur** (un paquet tourne en root et ne peut pas les faire) :
 
 ```bash
 flatpak install -y flathub com.dec05eba.gpu_screen_recorder   # 1) le moteur de capture
@@ -80,7 +96,7 @@ lazycam-shortcuts                                             # 2) activer Super
 > ne peut donc pas écrire dans *ta* session. La commande `lazycam-shortcuts`
 > (ou le bouton **« Activer »** dans `lazycam-config`) les pose dans ta session.
 
-### Option B — depuis les sources (git)
+### Option C — depuis les sources (git)
 
 ```bash
 git clone https://github.com/friteuseb/lazycam.git
@@ -332,18 +348,32 @@ propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
 bin/        scripts moteur (bash) + lazycam-shortcuts
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (logique pure, testable)
 data/       icône + fichier .desktop
-packaging/  build-deb.sh
+packaging/  build-deb.sh + update-apt-repo.sh
+docs/       site web (GitHub Pages) + docs/apt/ (dépôt APT)
 install.sh / uninstall.sh
-```
-
-Construire le paquet :
-
-```bash
-./packaging/build-deb.sh [version]      # → dist/lazycam_<version>_all.deb
 ```
 
 `gui/lazycam_backend.py` n'importe pas GTK : tu peux le tester seul (détection des
 appareils, lecture de la config, test micro) sans environnement graphique.
+
+### Publier une nouvelle version
+
+```bash
+# 1. construire le paquet
+./packaging/build-deb.sh 0.2.0           # → dist/lazycam_0.2.0_all.deb
+
+# 2. régénérer + resigner le dépôt APT
+./packaging/update-apt-repo.sh           # → docs/apt/ (signé)
+
+# 3. publier
+git add docs/apt && git commit -m "release 0.2.0" && git push   # GitHub Pages sert le dépôt
+gh release create v0.2.0 dist/lazycam_0.2.0_all.deb --title "lazycam v0.2.0"
+```
+
+> 🔑 **Clé de signature du dépôt** : la clé privée vit dans `~/.lazycam-apt-gnupg`
+> (hors du dépôt git, **jamais commitée**). **Sauvegarde ce dossier** : sans lui,
+> tu ne peux plus signer de mise à jour et les utilisateurs devront ré-importer
+> une nouvelle clé. La clé publique distribuée est `docs/apt/lazycam.gpg`.
 
 ---
 
