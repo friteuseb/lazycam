@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=lazycam
+Comment=Enregistreur d'écran « une touche » — réglages
+Comment[en]=One-key screen recorder — settings
+Exec=lazycam-config
+Icon=lazycam
+Terminal=false
+Categories=AudioVideo;Recorder;GTK;
+Keywords=screen;record;capture;screencast;tuto;
+StartupNotify=true

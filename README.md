@@ -62,10 +62,30 @@ Relançable à volonté (idempotent).
 | `Super + R` | Démarrer / arrêter (puis montage auto) |
 | `Super + Shift + R` | Pause / reprise |
 
-Choisir et **tester** le micro (niveau, réécoute, réduction de bruit) :
+### Interface de configuration (GTK)
 
 ```bash
-gsr-config.sh
+lazycam-config        # ou via le menu d'applications : « lazycam »
+```
+
+Une fenêtre GTK4 / libadwaita qui édite `~/.config/lazycam/config.json` :
+
+- **Ordre de préférence des micros** — glisse avec ↑ ↓. Le 1er micro présent
+  est utilisé. ▶ teste 4 s (niveau + réécoute), 🎙 affiche le **niveau en direct**.
+- **Ordre de préférence des écrans** + mode de capture
+  (Portail · Moniteur · Fenêtre active · Région).
+- **Réglages** : FPS, codec, qualité, dossier, réduction de bruit, normalisation.
+- **Aides tuto** : afficher les touches pressées (via
+  [showmethekey](https://github.com/AlynxZhou/showmethekey)).
+
+> Le mode **Portail** (par défaut) conserve le comportement historique : le
+> portail GNOME demande quel écran partager au 1er usage, puis mémorise. Les
+> modes **Moniteur** / **Région** utilisent la capture directe du moteur.
+
+### En terminal (sans GUI)
+
+```bash
+gsr-config.sh         # assistant texte : choisir & tester le micro
 ```
 
 La sélection auto reste active tant que tu ne forces pas un micro précis.

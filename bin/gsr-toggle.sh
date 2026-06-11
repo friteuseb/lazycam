@@ -22,6 +22,7 @@ if gsr_running; then
     gsr_signal -INT                                 # finalise la vidéo (vrai process)
     [ -n "$RECPID" ] && kill -INT "$RECPID" 2>/dev/null
     pkill -INT -x pw-record 2>/dev/null             # filet de sécurité
+    stop_overlays                                   # coupe les overlays tuto
     notify-send -i media-record "Enregistrement" "Arrêt en cours, fusion…"
 
     for _ in $(seq 1 80); do gsr_running || break; sleep 0.1; done
@@ -79,20 +80,22 @@ else
     FINAL="$OUTDIR/tuto_${STAMP}.mp4"
     SEG=0; PAUSED=0
 
-    # écran capturé : token portal selon que la station est branchée ou non
-    IFS=$'\t' read -r VTOKEN VLABEL < <(video_token)
+    # écran capturé : arguments -w … selon la config (portal par défaut)
+    read -ra VARGS <<< "$(video_capture_args)"
 
     # 1) vidéo (gsr, SANS audio)
     flatpak run --command=gpu-screen-recorder "$APP" \
-        -w portal -restore-portal-session yes \
-        -portal-session-token-filepath "$VTOKEN" \
+        "${VARGS[@]}" \
         -f "$FPS" -k "$CODEC" -q "$QUALITY" \
         -o "$VIDEO" >/dev/null 2>&1 &
 
-    # 2) voix (pw-record). MIC vide => choix auto (webcam sinon micro interne).
+    # 2) voix (pw-record). MIC vide => choix auto selon l'ordre de préférence.
     [ -z "$MIC" ] && MIC="$(pick_mic)"
     start_audio
 
+    # 3) overlays tuto éventuels (touches pressées)
+    start_overlays
+
     write_state
-    notify-send -i media-record "Enregistrement" "Démarré ●  $VLABEL + voix  →  $(basename "$FINAL")"
+    notify-send -i media-record "Enregistrement" "Démarré ●  écran + voix  →  $(basename "$FINAL")"
 fi
