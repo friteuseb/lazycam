@@ -8,6 +8,10 @@
 
 Surcouche à [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/) (NVENC / VAAPI, très faible impact CPU).
 
+[![Téléchargements](https://img.shields.io/github/downloads/friteuseb/lazycam/total?label=t%C3%A9l%C3%A9chargements&color=cba6f7)](https://github.com/friteuseb/lazycam/releases)
+[![Dernière version](https://img.shields.io/github/v/release/friteuseb/lazycam?label=version&color=f38ba8)](https://github.com/friteuseb/lazycam/releases/latest)
+[![Licence GPL-3.0](https://img.shields.io/badge/licence-GPL--3.0-89b4fa)](LICENSE)
+
 </div>
 
 ---

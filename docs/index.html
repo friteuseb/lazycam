@@ -59,6 +59,8 @@
     box-shadow:0 8px 28px rgba(243,139,168,.3)}
   .btn-ghost{background:var(--surface0);color:var(--text);border:1px solid var(--surface1)}
   .btn small{font-weight:500;opacity:.8;font-size:.8rem}
+  .dlcount{display:none;margin-top:20px;color:var(--muted);font-size:.9rem}
+  .dlcount b{color:var(--subtext);font-weight:700}
 
   /* mockup fenêtre app */
   .mock{margin:60px auto 0;max-width:560px;background:var(--mantle);border:1px solid var(--surface0);
@@ -158,6 +160,7 @@
     <a class="btn btn-primary" href="#install">⬇ Installer <small>· Ubuntu/Debian</small></a>
     <a class="btn btn-ghost" href="https://github.com/friteuseb/lazycam">Voir sur GitHub</a>
   </div>
+  <p class="dlcount" id="dlcount"></p>
 
   <!-- maquette de l'app -->
   <div class="mock">
@@ -250,6 +253,20 @@ lazycam-shortcuts</div>
 </div></footer>
 
 <script>
+  // compteur de téléchargements en direct (API GitHub, masqué si indispo)
+  fetch('https://api.github.com/repos/friteuseb/lazycam/releases')
+    .then(function(r){return r.ok ? r.json() : Promise.reject();})
+    .then(function(rels){
+      var n = rels.reduce(function(s,rel){
+        return s + (rel.assets||[]).reduce(function(a,x){return a+(x.download_count||0);},0);
+      },0);
+      if(n>0){
+        var e=document.getElementById('dlcount');
+        e.innerHTML='⬇ <b>'+n.toLocaleString('fr-FR')+'</b> téléchargement'+(n>1?'s':'')+' du .deb';
+        e.style.display='block';
+      }
+    }).catch(function(){});
+
   document.querySelectorAll('.cp').forEach(function(btn){
     btn.addEventListener('click',function(){
       var code=btn.parentNode.textContent.replace(/^copier/,'').trim();
