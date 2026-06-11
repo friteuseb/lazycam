@@ -78,11 +78,16 @@ exec python3 "$LIB_DIR/lazycam-gui.py" "\$@"
 EOF
     chmod +x "$BIN_DIR/lazycam-config"
     c_ok "commande : lazycam-config"
-    # icône + entrée de menu
-    install -m 0644 "$DATA_DIR/icon.svg" "$ICON_DIR/lazycam.svg"
-    install -m 0644 "$DATA_DIR/lazycam-config.desktop" "$APPS_DIR/lazycam-config.desktop"
+    # icône + entrée de menu — nommées d'après l'app-id pour que la fenêtre
+    # Wayland (app_id = org.friteuseb.lazycam) s'associe à son icône.
+    APPID=org.friteuseb.lazycam
+    rm -f "$APPS_DIR/lazycam-config.desktop" "$ICON_DIR/lazycam.svg"   # anciens noms
+    install -m 0644 "$DATA_DIR/icon.svg" "$ICON_DIR/$APPID.svg"
+    install -m 0644 "$DATA_DIR/$APPID.desktop" "$APPS_DIR/$APPID.desktop"
     command -v update-desktop-database >/dev/null && update-desktop-database "$APPS_DIR" 2>/dev/null
-    c_ok "entrée de menu « lazycam » + icône"
+    command -v gtk-update-icon-cache >/dev/null && \
+        gtk-update-icon-cache -qtf "$HOME/.local/share/icons/hicolor" 2>/dev/null
+    c_ok "entrée de menu « lazycam » + icône ($APPID)"
 else
     c_warn "PyGObject/GTK4/libadwaita absent — GUI non installée."
     c_warn "Pour l'activer : sudo apt install python3-gi gir1.2-gtk-4.0 gir1.2-adw-1"

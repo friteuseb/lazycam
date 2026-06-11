@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=lazycam
+GenericName=Enregistreur d'écran
+Comment=Enregistreur d'écran « une touche »
+Comment[en]=One-key screen recorder
+Exec=lazycam-config
+Icon=org.friteuseb.lazycam
+Terminal=false
+Categories=AudioVideo;Recorder;GTK;
+Keywords=screen;record;capture;screencast;tuto;enregistrement;
+StartupNotify=true
+StartupWMClass=org.friteuseb.lazycam
