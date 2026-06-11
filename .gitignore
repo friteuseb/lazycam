@@ -1,0 +1,5 @@
+# sorties locales éventuelles
+*.mp4
+*.flac
+*.state
+# rien d'autre : ce repo ne contient que des scripts
