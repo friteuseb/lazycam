@@ -90,13 +90,17 @@ class LazycamWindow(Adw.ApplicationWindow):
         toolbar = Adw.ToolbarView()
         header = Adw.HeaderBar()
 
-        self.rec_btn = Gtk.Button()
+        self.rec_content = Adw.ButtonContent()
+        self.rec_btn = Gtk.Button(child=self.rec_content)
         self.rec_btn.add_css_class("destructive-action")
+        self.rec_btn.set_tooltip_text("Démarrer / arrêter l'enregistrement (Super+R)")
         self.rec_btn.connect("clicked", self.on_toggle_rec)
         header.pack_start(self.rec_btn)
 
-        save_btn = Gtk.Button(label="Enregistrer")
+        save_btn = Gtk.Button(child=Adw.ButtonContent(
+            icon_name="document-save-symbolic", label="Appliquer"))
         save_btn.add_css_class("suggested-action")
+        save_btn.set_tooltip_text("Sauvegarder les réglages (config.json)")
         save_btn.connect("clicked", lambda *_: self.save())
         header.pack_end(save_btn)
 
@@ -437,13 +441,11 @@ class LazycamWindow(Adw.ApplicationWindow):
 
     def _update_rec_btn(self):
         if B.is_recording():
-            self.rec_btn.set_label("⏹ Arrêter")
-            self.rec_btn.remove_css_class("suggested-action")
-            self.rec_btn.add_css_class("destructive-action")
+            self.rec_content.set_icon_name("media-playback-stop-symbolic")
+            self.rec_content.set_label("Arrêter")
         else:
-            self.rec_btn.set_label("● Enregistrer")
-            self.rec_btn.remove_css_class("destructive-action")
-            self.rec_btn.add_css_class("suggested-action")
+            self.rec_content.set_icon_name("media-record-symbolic")
+            self.rec_content.set_label("Filmer")
         return False
 
     def _pick_folder(self, *_):
