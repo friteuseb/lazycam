@@ -116,15 +116,15 @@
 
   /* install */
   .install{background:var(--mantle);border-top:1px solid var(--surface0);border-bottom:1px solid var(--surface0)}
-  .steps{display:grid;gap:16px;max-width:760px;margin:0 auto}
-  .step{display:flex;gap:16px;align-items:flex-start}
+  .steps{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:760px;margin:0 auto}
+  .step{display:flex;gap:16px;align-items:flex-start;min-width:0}
   .step .num{flex:none;width:30px;height:30px;border-radius:50%;background:linear-gradient(120deg,var(--pink),var(--mauve));
     color:#1e1e2e;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-top:3px}
   .step .body{flex:1;min-width:0}
   .step .body h4{font-size:1rem;margin-bottom:8px;font-weight:600}
   .code{position:relative;background:var(--crust);border:1px solid var(--surface0);border-radius:10px;
     padding:14px 48px 14px 16px;font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
-    font-size:.86rem;color:var(--text);overflow-x:auto;white-space:pre}
+    font-size:.86rem;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere}
   .code .cp{position:absolute;top:8px;right:8px;background:var(--surface0);border:1px solid var(--surface1);
     color:var(--subtext);border-radius:7px;padding:5px 9px;font-size:.72rem;cursor:pointer;font-family:inherit}
   .code .cp:hover{color:var(--text)}
