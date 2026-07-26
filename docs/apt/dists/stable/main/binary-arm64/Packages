@@ -1,23 +1,23 @@
 Package: lazycam
-Version: 0.1.0
+Version: 0.2.0
 Architecture: all
 Maintainer: Cyril Wolfangel <cyril.wolfangel@gmail.com>
-Installed-Size: 144
+Installed-Size: 172
 Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1, jq, ffmpeg, pipewire-bin, wireplumber, libnotify-bin, libglib2.0-bin
 Recommends: flatpak
-Filename: pool/main/l/lazycam/lazycam_0.1.0_all.deb
-Size: 21988
-MD5sum: c6cbcf9812775b4299c4829c14248fa9
-SHA1: 3b2608b33f8f658465165016f49f0a9165b5983a
-SHA256: 4dc12e306239fdffbe3d5c99dc7d775306455dc0f1a5ea9c696a477c20c99975
+Filename: pool/main/l/lazycam/lazycam_0.2.0_all.deb
+Size: 29004
+MD5sum: 4c753d0bb1b40e4408d8259fd105c7f2
+SHA1: fa9f083d949ae97f2e1c71343bb3fa160adb8ef0
+SHA256: f647f58278218254284f0b9877cc64b66cabbc6d5b45902630b3326d496a07f8
 Section: video
 Priority: optional
 Homepage: https://github.com/friteuseb/lazycam
-Description: Enregistreur d'écran « une touche » pour GNOME
- lazycam filme l'écran et la voix d'un seul raccourci (Super+R), choisit
- automatiquement le micro et l'écran selon un ordre de préférence, gère la
- pause/reprise et monte automatiquement la vidéo à l'arrêt.
+Description: one-key screen recorder for GNOME on Wayland
+ lazycam records your screen and your voice from a single shortcut (Super+R),
+ picks the microphone and the monitor automatically from a preference order,
+ handles pause/resume, and edits the video automatically when you stop.
  .
- Surcouche au moteur GPU Screen Recorder (à installer via Flatpak).
- Inclut une interface de configuration GTK4 (lazycam-config).
+ A thin layer on top of the GPU Screen Recorder engine (installed via Flatpak).
+ Includes a GTK4 configuration interface (lazycam-config).
 

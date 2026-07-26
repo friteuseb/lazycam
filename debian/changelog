@@ -1,7 +1,8 @@
-lazycam (0.1.0) unstable; urgency=low
+lazycam (0.2.0) unstable; urgency=low
 
-  * Initial source package, for the Launchpad PPA.
-    packaging/build-ppa.sh rewrites this version and distribution per Ubuntu
+  * English interface with a French switch, native/Flatpak engine detection,
+    corrected showmethekey instructions. See the GitHub release notes.
+  * packaging/build-ppa.sh rewrites this version and distribution per Ubuntu
     series before building — do not upload this entry as-is.
 
  -- Cyril Wolfangel <cyril.wolfangel@gmail.com>  Sun, 26 Jul 2026 16:00:00 +0200

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # build-ppa.sh — build signed Debian *source* packages for the Launchpad PPA.
 #
-#   ./packaging/build-ppa.sh 0.1.0 noble jammy
+#   ./packaging/build-ppa.sh 0.2.0 noble jammy
 #
 # Launchpad builds the binaries itself, so it only accepts source uploads, one
 # per Ubuntu series, each with its own version. This script rewrites
@@ -25,7 +25,7 @@ OUT="$ROOT/dist/ppa"
 
 [ $# -ge 2 ] || {
     echo "Usage: $0 <version> <series> [series...]" >&2
-    echo "   e.g. $0 0.1.0 noble jammy" >&2
+    echo "   e.g. $0 0.2.0 noble jammy" >&2
     exit 1
 }
 VERSION="$1"; shift

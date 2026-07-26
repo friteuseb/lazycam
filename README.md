@@ -106,7 +106,7 @@ sudo apt update && sudo apt install lazycam
 [Download the `.deb`](https://github.com/friteuseb/lazycam/releases/latest) then:
 
 ```bash
-sudo apt install ./lazycam_0.1.0_all.deb
+sudo apt install ./lazycam_0.2.0_all.deb
 ```
 
 ### After installing (Option A or B)
