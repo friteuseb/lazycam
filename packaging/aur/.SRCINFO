@@ -19,6 +19,6 @@ pkgbase = lazycam
 	depends = gpu-screen-recorder
 	optdepends = showmethekey: on-screen overlay of the keys you press while recording
 	source = lazycam-0.2.0.tar.gz::https://github.com/friteuseb/lazycam/archive/refs/tags/v0.2.0.tar.gz
-	sha256sums = REPLACE_ME_RUN_packaging_update-aur.sh
+	sha256sums = a8b04f0c86f2dd43c4bef2230502ea2c47edb71c93968b4186d9d2b1e77a4af3
 
 pkgname = lazycam

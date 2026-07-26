@@ -25,7 +25,7 @@ depends=('bash'
          'gpu-screen-recorder')
 optdepends=('showmethekey: on-screen overlay of the keys you press while recording')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('REPLACE_ME_RUN_packaging_update-aur.sh')
+sha256sums=('a8b04f0c86f2dd43c4bef2230502ea2c47edb71c93968b4186d9d2b1e77a4af3')
 
 package() {
     cd "$srcdir/$pkgname-$pkgver"
