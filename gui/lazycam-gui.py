@@ -8,6 +8,10 @@ tester un micro (niveau + VU-mètre live) et de lancer/arrêter l'enregistrement
 
 Le moteur reste les scripts bash (gsr-toggle.sh) ; cette fenêtre ne fait
 qu'écrire la config et déclencher.
+
+Les chaînes affichées sont en anglais (langue source) et passent par
+lazycam_i18n._() ; la traduction française y vit. Voir la clé « lang » de la
+config et le sélecteur du groupe Interface.
 """
 import os
 import sys
@@ -22,6 +26,8 @@ from gi.repository import Gtk, Adw, GLib, Gio  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lazycam_backend as B  # noqa: E402
+import lazycam_i18n as I  # noqa: E402
+from lazycam_i18n import _  # noqa: E402
 
 
 # ───────────────────────── VU-mètre micro (live) ─────────────────────────
@@ -78,10 +84,14 @@ class MicMeter:
 
 # ────────────────────────────── Fenêtre ──────────────────────────────────
 class LazycamWindow(Adw.ApplicationWindow):
-    def __init__(self, app):
+    def __init__(self, app, cfg=None):
         super().__init__(application=app, title="lazycam")
         self.set_default_size(560, 760)
-        self.cfg = B.load_config()
+        # cfg est passé lors d'un changement de langue : la fenêtre est
+        # reconstruite, mais les réglages en cours d'édition ne sont pas perdus
+        # et ne sont pas écrits non plus (Appliquer reste seul maître).
+        self.cfg = cfg if cfg is not None else B.load_config()
+        I.set_language(self.cfg.get("lang", "auto"))
         self.mics = B.list_mics()
         self.monitors = B.list_monitors()
         self.meter = MicMeter(self._on_meter_level)
@@ -93,19 +103,19 @@ class LazycamWindow(Adw.ApplicationWindow):
         self.rec_content = Adw.ButtonContent()
         self.rec_btn = Gtk.Button(child=self.rec_content)
         self.rec_btn.add_css_class("destructive-action")
-        self.rec_btn.set_tooltip_text("Démarrer / arrêter l'enregistrement (Super+R)")
+        self.rec_btn.set_tooltip_text(_("Start / stop recording (Super+R)"))
         self.rec_btn.connect("clicked", self.on_toggle_rec)
         header.pack_start(self.rec_btn)
 
         save_btn = Gtk.Button(child=Adw.ButtonContent(
-            icon_name="document-save-symbolic", label="Appliquer"))
+            icon_name="document-save-symbolic", label=_("Apply")))
         save_btn.add_css_class("suggested-action")
-        save_btn.set_tooltip_text("Sauvegarder les réglages (config.json)")
-        save_btn.connect("clicked", lambda *_: self.save())
+        save_btn.set_tooltip_text(_("Save the settings (config.json)"))
+        save_btn.connect("clicked", lambda *_a: self.save())
         header.pack_end(save_btn)
 
         refresh_btn = Gtk.Button(icon_name="view-refresh-symbolic")
-        refresh_btn.set_tooltip_text("Re-détecter les appareils")
+        refresh_btn.set_tooltip_text(_("Re-detect devices"))
         refresh_btn.connect("clicked", self.on_refresh)
         header.pack_end(refresh_btn)
 
@@ -122,35 +132,37 @@ class LazycamWindow(Adw.ApplicationWindow):
         self._build_rec_group()
         self._build_tuto_group()
         self._build_shortcuts_group()
+        self._build_interface_group()
 
         self._update_rec_btn()
         GLib.timeout_add_seconds(2, self._poll_rec)
 
     # ----- groupe Source vidéo -----
     def _build_video_group(self):
-        g = Adw.PreferencesGroup(title="Source vidéo",
-                                 description="Le 1er écran disponible (selon l'ordre) est filmé.")
+        g = Adw.PreferencesGroup(
+            title=_("Video source"),
+            description=_("The first available monitor, in order, is recorded."))
         self.page.add(g)
 
         self.mode_row = self._combo(
-            "Mode de capture",
-            [B.CAPTURE_LABELS[m] for m in B.CAPTURE_MODES],
+            _("Capture mode"),
+            [_(B.CAPTURE_LABELS[m]) for m in B.CAPTURE_MODES],
             B.CAPTURE_MODES.index(self.cfg.get("capture_mode", "portal")),
             self._on_mode_changed)
         g.add(self.mode_row)
 
         self.screen_group = Adw.PreferencesGroup(
-            title="Ordre des écrans",
-            description="Glisse avec ↑ ↓. Utilisé en mode « Moniteur ».")
+            title=_("Monitor order"),
+            description=_("Reorder with ↑ ↓. Used in “Monitor” mode."))
         self.page.add(self.screen_group)
         self._screen_rows_box = self.screen_group
         self._rebuild_screen_rows()
 
-        self.region_row = Adw.EntryRow(title="Région (LxH+X+Y, ex. 1280x720+0+0)")
+        self.region_row = Adw.EntryRow(title=_("Region (WxH+X+Y, e.g. 1280x720+0+0)"))
         self.region_row.set_text(self.cfg.get("region", ""))
         self.region_row.connect("changed", lambda r: self._set("region", r.get_text()))
         fill = Gtk.Button(icon_name="view-fullscreen-symbolic", valign=Gtk.Align.CENTER)
-        fill.set_tooltip_text("Pré-remplir avec le 1er écran")
+        fill.set_tooltip_text(_("Prefill with the first monitor"))
         fill.connect("clicked", self._prefill_region)
         self.region_row.add_suffix(fill)
         self.screen_group.add(self.region_row)
@@ -163,14 +175,15 @@ class LazycamWindow(Adw.ApplicationWindow):
         order = self.cfg.get("screen_order", [])
         for i, pat in enumerate(order):
             hit = B.match_present(pat, self.monitors)
-            sub = (f"● {hit['name']} {hit['res']}" if hit else "○ aucun écran correspondant")
+            sub = (f"● {hit['name']} {hit['res']}" if hit
+                   else _("○ no matching monitor"))
             row = Adw.ActionRow(title=pat, subtitle=sub)
             self._add_order_controls(row, "screen_order", i)
             self.screen_group.add(row)
             self._screen_rows.append(row)
-        add = Adw.ActionRow(title="＋ Ajouter un écran détecté")
+        add = Adw.ActionRow(title=_("＋ Add a detected monitor"))
         btn = Gtk.Button(icon_name="list-add-symbolic", valign=Gtk.Align.CENTER)
-        btn.connect("clicked", lambda *_: self._add_detected("screen"))
+        btn.connect("clicked", lambda *_a: self._add_detected("screen"))
         add.add_suffix(btn)
         add.set_activatable_widget(btn)
         self.screen_group.add(add)
@@ -179,24 +192,26 @@ class LazycamWindow(Adw.ApplicationWindow):
     # ----- groupe Entrée audio -----
     def _build_audio_group(self):
         self.audio_group = Adw.PreferencesGroup(
-            title="Entrée audio",
-            description="Ordre de préférence des micros. ▶ teste, 🎙 écoute le niveau en direct.")
+            title=_("Audio input"),
+            description=_("Microphone preference order. ▶ tests, 🎙 monitors the live level."))
         self.page.add(self.audio_group)
         self._rebuild_mic_rows()
 
         opts = Adw.PreferencesGroup()
         self.page.add(opts)
-        self.denoise_row = Adw.SwitchRow(title="Réduction de bruit",
-                                         subtitle="Filtre les bruits de fond constants")
+        self.denoise_row = Adw.SwitchRow(
+            title=_("Noise reduction"),
+            subtitle=_("Filters out constant background noise"))
         self.denoise_row.set_active(bool(self.cfg.get("denoise")))
         self.denoise_row.connect("notify::active",
-                                 lambda r, _: self._set("denoise", r.get_active()))
+                                 lambda r, _p: self._set("denoise", r.get_active()))
         opts.add(self.denoise_row)
-        self.norm_row = Adw.SwitchRow(title="Normaliser la voix",
-                                      subtitle="Volume homogène (loudnorm)")
+        self.norm_row = Adw.SwitchRow(
+            title=_("Normalise the voice"),
+            subtitle=_("Even volume (loudnorm)"))
         self.norm_row.set_active(bool(self.cfg.get("normalize")))
         self.norm_row.connect("notify::active",
-                              lambda r, _: self._set("normalize", r.get_active()))
+                              lambda r, _p: self._set("normalize", r.get_active()))
         opts.add(self.norm_row)
 
     def _rebuild_mic_rows(self):
@@ -207,7 +222,8 @@ class LazycamWindow(Adw.ApplicationWindow):
         for i, pat in enumerate(order):
             hit = B.match_present(pat, self.mics)
             title = hit["desc"] if hit else pat
-            sub = (f"● présent · {hit['name']}" if hit else f"○ absent · motif : {pat}")
+            sub = (_("● present · {name}").format(name=hit["name"]) if hit
+                   else _("○ absent · pattern: {pattern}").format(pattern=pat))
             row = Adw.ActionRow(title=title, subtitle=sub)
 
             bar = Gtk.LevelBar(min_value=0, max_value=1, valign=Gtk.Align.CENTER,
@@ -216,14 +232,14 @@ class LazycamWindow(Adw.ApplicationWindow):
 
             listen = Gtk.ToggleButton(icon_name="audio-input-microphone-symbolic",
                                       valign=Gtk.Align.CENTER)
-            listen.set_tooltip_text("Écouter le niveau en direct")
+            listen.set_tooltip_text(_("Monitor the live level"))
             listen.set_sensitive(hit is not None)
             listen.connect("toggled", self._on_listen, hit["name"] if hit else None, bar)
             row.add_suffix(listen)
 
             test = Gtk.Button(icon_name="media-playback-start-symbolic",
                               valign=Gtk.Align.CENTER)
-            test.set_tooltip_text("Test 4 s : niveau + réécoute")
+            test.set_tooltip_text(_("4 s test: level + playback"))
             test.set_sensitive(hit is not None)
             test.connect("clicked", self._on_test, hit["name"] if hit else None, row)
             row.add_suffix(test)
@@ -232,9 +248,9 @@ class LazycamWindow(Adw.ApplicationWindow):
             self.audio_group.add(row)
             self._mic_rows.append(row)
 
-        add = Adw.ActionRow(title="＋ Ajouter un micro détecté")
+        add = Adw.ActionRow(title=_("＋ Add a detected microphone"))
         btn = Gtk.Button(icon_name="list-add-symbolic", valign=Gtk.Align.CENTER)
-        btn.connect("clicked", lambda *_: self._add_detected("mic"))
+        btn.connect("clicked", lambda *_a: self._add_detected("mic"))
         add.add_suffix(btn)
         add.set_activatable_widget(btn)
         self.audio_group.add(add)
@@ -242,20 +258,20 @@ class LazycamWindow(Adw.ApplicationWindow):
 
     # ----- groupe Enregistrement -----
     def _build_rec_group(self):
-        g = Adw.PreferencesGroup(title="Enregistrement")
+        g = Adw.PreferencesGroup(title=_("Recording"))
         self.page.add(g)
         fps_vals = ["24", "30", "60"]
         cur_fps = str(self.cfg.get("fps", 30))
-        g.add(self._combo("Images / seconde", fps_vals,
+        g.add(self._combo(_("Frames per second"), fps_vals,
                           fps_vals.index(cur_fps) if cur_fps in fps_vals else 1,
                           lambda i: self._set("fps", int(fps_vals[i]))))
         g.add(self._combo("Codec", [c.upper() for c in B.CODECS],
                           B.CODECS.index(self.cfg.get("codec", "h264")),
                           lambda i: self._set("codec", B.CODECS[i])))
-        g.add(self._combo("Qualité", B.QUALITIES,
+        g.add(self._combo(_("Quality"), [_(B.QUALITY_LABELS[q]) for q in B.QUALITIES],
                           B.QUALITIES.index(self.cfg.get("quality", "very_high")),
                           lambda i: self._set("quality", B.QUALITIES[i])))
-        self.out_row = Adw.EntryRow(title="Dossier de sortie")
+        self.out_row = Adw.EntryRow(title=_("Output folder"))
         self.out_row.set_text(self.cfg.get("outdir", "~/Videos"))
         self.out_row.connect("changed", lambda r: self._set("outdir", r.get_text()))
         folder = Gtk.Button(icon_name="folder-open-symbolic", valign=Gtk.Align.CENTER)
@@ -266,52 +282,77 @@ class LazycamWindow(Adw.ApplicationWindow):
     # ----- groupe Aides tuto -----
     def _build_tuto_group(self):
         g = Adw.PreferencesGroup(
-            title="Aides tuto",
-            description="Surcouches utiles pour les tutoriels.")
+            title=_("Tutorial helpers"),
+            description=_("Overlays that help when recording tutorials."))
         self.page.add(g)
-        keys = Adw.SwitchRow(title="Afficher les touches pressées")
+        keys = Adw.SwitchRow(title=_("Show pressed keys"))
         if not B.have_showmethekey():
-            keys.set_subtitle("Nécessite showmethekey — aucun paquet Ubuntu, "
-                              "à compiler depuis les sources (voir le README)")
+            keys.set_subtitle(_("Needs showmethekey — no Ubuntu package, has to be "
+                                "built from source (see the README)"))
         keys.set_active(bool(self.cfg.get("show_keys")))
-        keys.connect("notify::active", lambda r, _: self._set("show_keys", r.get_active()))
+        keys.connect("notify::active", lambda r, _p: self._set("show_keys", r.get_active()))
         g.add(keys)
-        clicks = Adw.SwitchRow(title="Mettre les clics en évidence",
-                               subtitle="À venir : nécessite une extension GNOME Shell")
+        clicks = Adw.SwitchRow(title=_("Highlight mouse clicks"),
+                               subtitle=_("Coming later: needs a GNOME Shell extension"))
         clicks.set_active(bool(self.cfg.get("show_clicks")))
         clicks.set_sensitive(False)
         g.add(clicks)
 
     # ----- groupe Raccourcis clavier -----
     def _build_shortcuts_group(self):
-        g = Adw.PreferencesGroup(title="Raccourcis clavier")
+        g = Adw.PreferencesGroup(title=_("Keyboard shortcuts"))
         self.page.add(g)
         self.sc_row = Adw.ActionRow(
             title="Super + R  ·  Super + Shift + R",
-            subtitle="Démarrer/arrêter  ·  Pause/reprise")
+            subtitle=_("Start/stop · Pause/resume"))
         self.sc_btn = Gtk.Button(valign=Gtk.Align.CENTER)
         self.sc_btn.connect("clicked", self._on_shortcuts)
         self.sc_row.add_suffix(self.sc_btn)
         g.add(self.sc_row)
         self._update_sc_btn()
 
+    # ----- groupe Interface (langue) -----
+    def _build_interface_group(self):
+        g = Adw.PreferencesGroup(title=_("Interface"))
+        self.page.add(g)
+        cur = self.cfg.get("lang", "auto")
+        row = self._combo(
+            _("Language"),
+            [_(I.LANGUAGE_LABELS[code]) for code in I.LANGUAGES],
+            I.LANGUAGES.index(cur) if cur in I.LANGUAGES else 0,
+            self._on_lang_changed)
+        row.set_subtitle(_("Applies immediately; saved with Apply like the other settings."))
+        g.add(row)
+
+    def _on_lang_changed(self, idx):
+        lang = I.LANGUAGES[idx]
+        if lang == self.cfg.get("lang", "auto"):
+            return
+        self._set("lang", lang)
+        # Les libellés sont posés à la construction : on reconstruit la fenêtre
+        # en lui repassant self.cfg, pour ne perdre ni les réglages en cours
+        # d'édition ni la règle « rien n'est écrit avant Appliquer ».
+        self.meter.stop()
+        app = self.get_application()
+        GLib.idle_add(app.rebuild_window, self.cfg, self)
+
     def _update_sc_btn(self):
         if B.shortcuts_active():
-            self.sc_btn.set_label("Désactiver")
+            self.sc_btn.set_label(_("Disable"))
             self.sc_btn.remove_css_class("suggested-action")
-            self.sc_row.set_subtitle("Actifs · Démarrer/arrêter · Pause/reprise")
+            self.sc_row.set_subtitle(_("Enabled · Start/stop · Pause/resume"))
         else:
-            self.sc_btn.set_label("Activer")
+            self.sc_btn.set_label(_("Enable"))
             self.sc_btn.add_css_class("suggested-action")
-            self.sc_row.set_subtitle("Inactifs — clique pour les poser")
+            self.sc_row.set_subtitle(_("Disabled — click to register them"))
 
     def _on_shortcuts(self, btn):
         active = B.shortcuts_active()
         try:
             B.set_shortcuts(remove=active)
-            self._toast("Raccourcis désactivés." if active else "Raccourcis activés ✓")
+            self._toast(_("Shortcuts disabled.") if active else _("Shortcuts enabled ✓"))
         except Exception:
-            self._toast("Échec : lance « lazycam-shortcuts » en terminal.")
+            self._toast(_("Failed: run “lazycam-shortcuts” in a terminal."))
         self._update_sc_btn()
 
     # ───────────────────────── helpers UI ─────────────────────────
@@ -319,19 +360,19 @@ class LazycamWindow(Adw.ApplicationWindow):
         row = Adw.ComboRow(title=title)
         row.set_model(Gtk.StringList.new(options))
         row.set_selected(max(0, active))
-        row.connect("notify::selected", lambda r, _: on_change(r.get_selected()))
+        row.connect("notify::selected", lambda r, _p: on_change(r.get_selected()))
         return row
 
     def _add_order_controls(self, row, key, idx):
         up = Gtk.Button(icon_name="go-up-symbolic", valign=Gtk.Align.CENTER)
-        up.set_tooltip_text("Monter")
-        up.connect("clicked", lambda *_: self._move(key, idx, -1))
+        up.set_tooltip_text(_("Move up"))
+        up.connect("clicked", lambda *_a: self._move(key, idx, -1))
         down = Gtk.Button(icon_name="go-down-symbolic", valign=Gtk.Align.CENTER)
-        down.set_tooltip_text("Descendre")
-        down.connect("clicked", lambda *_: self._move(key, idx, +1))
+        down.set_tooltip_text(_("Move down"))
+        down.connect("clicked", lambda *_a: self._move(key, idx, +1))
         rm = Gtk.Button(icon_name="user-trash-symbolic", valign=Gtk.Align.CENTER)
-        rm.set_tooltip_text("Retirer")
-        rm.connect("clicked", lambda *_: self._remove(key, idx))
+        rm.set_tooltip_text(_("Remove"))
+        rm.connect("clicked", lambda *_a: self._remove(key, idx))
         for b in (up, down, rm):
             b.add_css_class("flat")
             row.add_suffix(b)
@@ -356,16 +397,16 @@ class LazycamWindow(Adw.ApplicationWindow):
             present = {p for p in self.cfg["mic_order"]}
             choices = [m for m in self.mics
                        if not any(B.match_present(p, [m]) for p in present)]
-            self._choose_dialog("Ajouter un micro", choices, "desc", "name", "mic_order")
+            self._choose_dialog(_("Add a microphone"), choices, "desc", "name", "mic_order")
         else:
             present = {p for p in self.cfg["screen_order"]}
             choices = [m for m in self.monitors
                        if not any(B.match_present(p, [m]) for p in present)]
-            self._choose_dialog("Ajouter un écran", choices, "name", "name", "screen_order")
+            self._choose_dialog(_("Add a monitor"), choices, "name", "name", "screen_order")
 
     def _choose_dialog(self, title, choices, label_key, val_key, cfg_key):
         if not choices:
-            self._toast("Tous les appareils détectés sont déjà dans la liste.")
+            self._toast(_("Every detected device is already in the list."))
             return
         dlg = Adw.MessageDialog(transient_for=self, heading=title)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -381,8 +422,8 @@ class LazycamWindow(Adw.ApplicationWindow):
             self._radio_map[btn] = c[val_key]
             box.append(btn)
         dlg.set_extra_child(box)
-        dlg.add_response("cancel", "Annuler")
-        dlg.add_response("add", "Ajouter")
+        dlg.add_response("cancel", _("Cancel"))
+        dlg.add_response("add", _("Add"))
         dlg.set_response_appearance("add", Adw.ResponseAppearance.SUGGESTED)
 
         def on_resp(d, resp):
@@ -413,7 +454,7 @@ class LazycamWindow(Adw.ApplicationWindow):
         self.screen_group.set_visible(mode in ("monitor", "region"))
         self.region_row.set_visible(mode == "region")
 
-    def _prefill_region(self, *_):
+    def _prefill_region(self, *_a):
         if self.monitors:
             self.region_row.set_text(self.monitors[0]["res"] + "+0+0")
 
@@ -435,7 +476,7 @@ class LazycamWindow(Adw.ApplicationWindow):
 
     def _on_test(self, btn, target, row):
         btn.set_sensitive(False)
-        self._toast("🎙 Parle… (4 s)")
+        self._toast(_("🎙 Speak… (4 s)"))
 
         def work():
             res = B.mic_test(target, 4)
@@ -450,24 +491,26 @@ class LazycamWindow(Adw.ApplicationWindow):
         def done(res):
             mean, mx = res.get("mean"), res.get("max")
             if mean is None:
-                row.set_subtitle("test : échec de la capture")
+                row.set_subtitle(_("test: capture failed"))
             else:
-                row.set_subtitle(f"test : moyenne {mean:.0f} dB · crête {mx:.0f} dB "
-                                 f"({'bon' if mean > -30 else 'faible'})")
+                row.set_subtitle(
+                    _("test: mean {mean} dB · peak {peak} dB ({verdict})").format(
+                        mean=f"{mean:.0f}", peak=f"{mx:.0f}",
+                        verdict=_("good") if mean > -30 else _("low")))
             btn.set_sensitive(True)
             return False
         threading.Thread(target=work, daemon=True).start()
 
-    def on_toggle_rec(self, *_):
+    def on_toggle_rec(self, *_a):
         B.toggle_recording()
         GLib.timeout_add(800, self._update_rec_btn)
 
-    def on_refresh(self, *_):
+    def on_refresh(self, *_a):
         self.mics = B.list_mics()
         self.monitors = B.list_monitors()
         self._rebuild_mic_rows()
         self._rebuild_screen_rows()
-        self._toast("Appareils re-détectés.")
+        self._toast(_("Devices re-detected."))
 
     def _poll_rec(self):
         self._update_rec_btn()
@@ -476,14 +519,14 @@ class LazycamWindow(Adw.ApplicationWindow):
     def _update_rec_btn(self):
         if B.is_recording():
             self.rec_content.set_icon_name("media-playback-stop-symbolic")
-            self.rec_content.set_label("Arrêter")
+            self.rec_content.set_label(_("Stop"))
         else:
             self.rec_content.set_icon_name("media-record-symbolic")
-            self.rec_content.set_label("Filmer")
+            self.rec_content.set_label(_("Record"))
         return False
 
-    def _pick_folder(self, *_):
-        dlg = Gtk.FileDialog(title="Dossier de sortie")
+    def _pick_folder(self, *_a):
+        dlg = Gtk.FileDialog(title=_("Output folder"))
         dlg.select_folder(self, None, self._folder_picked)
 
     def _folder_picked(self, dlg, res):
@@ -499,7 +542,7 @@ class LazycamWindow(Adw.ApplicationWindow):
 
     def save(self):
         B.save_config(self.cfg)
-        self._toast("Réglages enregistrés ✓")
+        self._toast(_("Settings saved ✓"))
 
     def _toast(self, msg):
         self.toasts.add_toast(Adw.Toast.new(msg))
@@ -517,6 +560,13 @@ class LazycamApp(Adw.Application):
     def do_activate(self):
         win = self.props.active_window or LazycamWindow(self)
         win.present()
+
+    def rebuild_window(self, cfg, old):
+        """Recrée la fenêtre après un changement de langue, cfg conservé tel quel."""
+        LazycamWindow(self, cfg=cfg).present()
+        if old is not None:
+            old.destroy()
+        return False
 
 
 if __name__ == "__main__":

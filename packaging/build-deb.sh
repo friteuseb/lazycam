@@ -31,8 +31,7 @@ for f in gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcut
 done
 
 # GUI (lib) + lanceur
-install -m 0644 "$ROOT/gui/lazycam_backend.py" "$STAGE/usr/share/lazycam/lazycam_backend.py"
-install -m 0644 "$ROOT/gui/lazycam-gui.py"     "$STAGE/usr/share/lazycam/lazycam-gui.py"
+install -m 0644 "$ROOT"/gui/*.py "$STAGE/usr/share/lazycam/"
 install -m 0755 "$ROOT/packaging/lazycam-config" "$STAGE/usr/bin/lazycam-config"
 
 # entrée de menu + icône (nommées d'après l'app-id)

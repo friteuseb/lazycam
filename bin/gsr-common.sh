@@ -46,6 +46,21 @@ AUDIO_CHAIN=""
 [ "${DENOISE:-0}" = "1" ] && AUDIO_CHAIN="highpass=f=90,afftdn=nf=-25"
 [ -n "$VOICE_FILTER" ] && AUDIO_CHAIN="${AUDIO_CHAIN:+$AUDIO_CHAIN,}$VOICE_FILTER"
 
+# --- Langue des notifications ---------------------------------------------
+# Mêmes règles que la GUI (clé "lang" de config.json : auto | en | fr), pour
+# que les notifications ne soient pas dans une autre langue que la fenêtre.
+UI_LANG="$(jcfg '.lang' auto)"
+if [ "$UI_LANG" = "auto" ]; then
+    case "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" in
+        fr*) UI_LANG=fr ;;
+        *)   UI_LANG=en ;;
+    esac
+fi
+# msg <anglais> <français> : la chaîne dans la langue retenue.
+msg() { [ "$UI_LANG" = "fr" ] && printf '%s' "$2" || printf '%s' "$1"; }
+# Titre commun des notifications.
+NTITLE="$(msg 'Recording' 'Enregistrement')"
+
 APP=com.dec05eba.gpu_screen_recorder
 # Invocation du moteur de capture. Ubuntu/Debian n'ont pas de paquet
 # gpu-screen-recorder : il n'existe qu'en Flatpak. Arch (AUR) et d'autres

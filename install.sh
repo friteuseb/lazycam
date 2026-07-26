@@ -68,8 +68,7 @@ done
 title "4/5  Interface de configuration (GTK)"
 if python3 -c 'import gi; gi.require_version("Gtk","4.0"); gi.require_version("Adw","1")' 2>/dev/null; then
     mkdir -p "$LIB_DIR" "$APPS_DIR" "$ICON_DIR"
-    install -m 0644 "$GUI_DIR/lazycam_backend.py" "$LIB_DIR/lazycam_backend.py"
-    install -m 0644 "$GUI_DIR/lazycam-gui.py"     "$LIB_DIR/lazycam-gui.py"
+    install -m 0644 "$GUI_DIR"/*.py "$LIB_DIR/"
     c_ok "GUI → $LIB_DIR"
     # commande de lancement
     cat > "$BIN_DIR/lazycam-config" <<EOF

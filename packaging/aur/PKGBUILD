@@ -35,8 +35,7 @@ package() {
     done
     install -Dm755 packaging/lazycam-config "$pkgdir/usr/bin/lazycam-config"
 
-    install -Dm644 gui/lazycam_backend.py "$pkgdir/usr/share/lazycam/lazycam_backend.py"
-    install -Dm644 gui/lazycam-gui.py     "$pkgdir/usr/share/lazycam/lazycam-gui.py"
+    install -Dm644 -t "$pkgdir/usr/share/lazycam" gui/*.py
 
     install -Dm644 data/org.friteuseb.lazycam.desktop \
         "$pkgdir/usr/share/applications/org.friteuseb.lazycam.desktop"

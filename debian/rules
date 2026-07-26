@@ -18,8 +18,7 @@ override_dh_auto_install:
 	install -d $(DEST)/usr/share/icons/hicolor/scalable/apps
 	for f in $(SCRIPTS); do install -m 0755 bin/$$f $(DEST)/usr/bin/$$f; done
 	install -m 0755 packaging/lazycam-config $(DEST)/usr/bin/lazycam-config
-	install -m 0644 gui/lazycam_backend.py $(DEST)/usr/share/lazycam/lazycam_backend.py
-	install -m 0644 gui/lazycam-gui.py $(DEST)/usr/share/lazycam/lazycam-gui.py
+	install -m 0644 gui/*.py $(DEST)/usr/share/lazycam/
 	install -m 0644 data/org.friteuseb.lazycam.desktop \
 		$(DEST)/usr/share/applications/org.friteuseb.lazycam.desktop
 	install -m 0644 data/icon.svg \

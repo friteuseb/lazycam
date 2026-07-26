@@ -207,6 +207,14 @@ Sections:
 | **Recording** | FPS, codec, quality, output folder. |
 | **Tutorial helpers** | Show pressed keys (clicks: coming later). |
 | **Keyboard shortcuts** | Enable / disable Super+R and Super+Shift+R. |
+| **Interface** | Language of the window *and* of the recording notifications: automatic, English or French. |
+
+The interface is in English, with French available. `auto` — the default — follows
+your locale (`LC_ALL` / `LC_MESSAGES` / `LANG`), so a French desktop gets French
+without touching anything, and everyone else gets English. Switching language
+redraws the window immediately; like every other setting it is only written to
+`config.json` when you click **Apply**. The `Super+R` notifications follow the same
+setting, so the window and the notifications never end up in different languages.
 
 To reorder a list, use the **↑ ↓** arrows on each row. To remove an entry: 🗑. To
 add a detected one: **＋**.
@@ -237,7 +245,9 @@ add a detected one: **＋**.
   "normalize": true,         // volume normalisation (loudnorm)
 
   "show_keys": false,        // show pressed keys (showmethekey)
-  "show_clicks": false       // (coming later: needs a GNOME extension)
+  "show_clicks": false,      // (coming later: needs a GNOME extension)
+
+  "lang": "auto"             // interface language: auto | en | fr
 }
 ```
 
@@ -393,6 +403,7 @@ in sync.
 ```
 bin/        engine scripts (bash) + lazycam-shortcuts
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (pure, testable logic)
+            + lazycam_i18n.py (English source strings, French catalogue)
 data/       icon + .desktop file
 packaging/  build-deb.sh, update-apt-repo.sh, build-ppa.sh, update-aur.sh,
             make-demo.sh, lazycam-config (the /usr/bin launcher), aur/

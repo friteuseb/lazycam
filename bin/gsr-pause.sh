@@ -13,7 +13,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$DIR/gsr-common.sh"
 
 if ! gsr_running || [ ! -f "$STATE" ]; then
-    notify-send -i dialog-information "Enregistrement" "Aucun enregistrement en cours."
+    notify-send -i dialog-information "$NTITLE" "$(msg 'No recording in progress.' 'Aucun enregistrement en cours.')"
     exit 0
 fi
 
@@ -26,7 +26,7 @@ if [ "$PAUSED" = "0" ]; then
     [ -n "$RECPID" ] && kill -INT "$RECPID" 2>/dev/null   # clôt le segment audio
     PAUSED=1
     write_state
-    notify-send -i media-playback-pause "Enregistrement" "⏸  En pause"
+    notify-send -i media-playback-pause "$NTITLE" "$(msg '⏸  Paused' '⏸  En pause')"
 else
     # --- REPRISE ---
     gsr_signal -USR2                                # reprend la vidéo
@@ -34,5 +34,5 @@ else
     start_audio                                     # nouveau segment audio
     PAUSED=0
     write_state
-    notify-send -i media-record "Enregistrement" "▶  Reprise"
+    notify-send -i media-record "$NTITLE" "$(msg '▶  Resumed' '▶  Reprise')"
 fi

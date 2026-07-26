@@ -23,7 +23,7 @@ if gsr_running; then
     [ -n "$RECPID" ] && kill -INT "$RECPID" 2>/dev/null
     pkill -INT -x pw-record 2>/dev/null             # filet de sécurité
     stop_overlays                                   # coupe les overlays tuto
-    notify-send -i media-record "Enregistrement" "Arrêt en cours, fusion…"
+    notify-send -i media-record "$NTITLE" "$(msg 'Stopping, merging…' 'Arrêt en cours, fusion…')"
 
     for _ in $(seq 1 80); do gsr_running || break; sleep 0.1; done
     # attendre la finalisation des segments audio : tant que pw-record tourne,
@@ -58,17 +58,18 @@ if gsr_running; then
                -map 0:v -map '[a]' -c:v copy -c:a aac -b:a 192k -shortest \
                "$FINAL"; then
             rm -f "$VIDEO" "${segs[@]}"
-            notify-send -i media-record "Enregistrement" "Terminé ✓  $(basename "$FINAL")"
+            notify-send -i media-record "$NTITLE" "$(msg 'Done ✓' 'Terminé ✓')  $(basename "$FINAL")"
         else
-            notify-send -i dialog-error "Enregistrement" \
-                "Fusion échouée — fichiers bruts conservés dans $OUTDIR"
+            notify-send -i dialog-error "$NTITLE" \
+                "$(msg "Merge failed — raw files kept in $OUTDIR" \
+                       "Fusion échouée — fichiers bruts conservés dans $OUTDIR")"
         fi
     elif [ -n "$VIDEO" ] && [ -f "$VIDEO" ]; then
         mv -f "$VIDEO" "$FINAL"
-        notify-send -i dialog-warning "Enregistrement" \
-            "Terminé SANS voix ✓  $(basename "$FINAL")"
+        notify-send -i dialog-warning "$NTITLE" \
+            "$(msg 'Done WITHOUT voice ✓' 'Terminé SANS voix ✓')  $(basename "$FINAL")"
     else
-        notify-send -i dialog-error "Enregistrement" "Aucun fichier vidéo trouvé."
+        notify-send -i dialog-error "$NTITLE" "$(msg 'No video file found.' 'Aucun fichier vidéo trouvé.')"
     fi
     rm -f "$STATE"
 else
@@ -97,5 +98,6 @@ else
     start_overlays
 
     write_state
-    notify-send -i media-record "Enregistrement" "Démarré ●  écran + voix  →  $(basename "$FINAL")"
+    notify-send -i media-record "$NTITLE" \
+        "$(msg 'Started ●  screen + voice' 'Démarré ●  écran + voix')  →  $(basename "$FINAL")"
 fi

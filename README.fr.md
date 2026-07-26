@@ -210,6 +210,14 @@ Sections :
 | **Enregistrement** | FPS, codec, qualité, dossier de sortie. |
 | **Aides tuto** | Afficher les touches pressées (clics : à venir). |
 | **Raccourcis clavier** | Activer / désactiver Super+R et Super+Shift+R. |
+| **Interface** | Langue de la fenêtre *et* des notifications d'enregistrement : automatique, anglais ou français. |
+
+L'interface est en anglais, le français reste disponible. `auto` — le défaut — suit
+ta locale (`LC_ALL` / `LC_MESSAGES` / `LANG`) : un bureau français obtient donc le
+français sans rien régler, et les autres l'anglais. Changer de langue redessine la
+fenêtre immédiatement ; comme tout le reste, ce n'est écrit dans `config.json` qu'au
+clic sur **Appliquer**. Les notifications de `Super+R` suivent le même réglage, pour
+que la fenêtre et les notifications ne soient jamais dans deux langues différentes.
 
 Pour réordonner une liste : les flèches **↑ ↓** de chaque ligne. Pour en retirer
 un : 🗑. Pour en ajouter un détecté : **＋**.
@@ -240,7 +248,9 @@ un : 🗑. Pour en ajouter un détecté : **＋**.
   "normalize": true,         // normalisation du volume (loudnorm)
 
   "show_keys": false,        // afficher les touches pressées (showmethekey)
-  "show_clicks": false       // (à venir : nécessite une extension GNOME)
+  "show_clicks": false,      // (à venir : nécessite une extension GNOME)
+
+  "lang": "auto"             // langue de l'interface : auto | en | fr
 }
 ```
 
@@ -397,6 +407,7 @@ propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
 ```
 bin/        scripts moteur (bash) + lazycam-shortcuts
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (logique pure, testable)
+            + lazycam_i18n.py (chaînes sources anglaises, catalogue français)
 data/       icône + fichier .desktop
 packaging/  build-deb.sh, update-apt-repo.sh, build-ppa.sh, update-aur.sh,
             make-demo.sh, lazycam-config (le lanceur /usr/bin), aur/

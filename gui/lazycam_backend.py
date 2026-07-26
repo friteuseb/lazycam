@@ -44,16 +44,25 @@ DEFAULTS = {
     "normalize": True,
     "show_keys": False,
     "show_clicks": False,
+    "lang": "auto",                    # auto | en | fr (interface language)
 }
 
 CODECS = ["h264", "hevc", "av1"]
 QUALITIES = ["medium", "high", "very_high", "ultra"]
 CAPTURE_MODES = ["portal", "monitor", "focused", "region"]
+
+# Labels below are English source strings; the GUI runs them through lazycam_i18n.
 CAPTURE_LABELS = {
-    "portal": "Portail (choix à l'écran)",
-    "monitor": "Moniteur (par ordre de préférence)",
-    "focused": "Fenêtre active",
-    "region": "Région personnalisée",
+    "portal": "Portal (pick on screen)",
+    "monitor": "Monitor (by preference order)",
+    "focused": "Active window",
+    "region": "Custom region",
+}
+QUALITY_LABELS = {
+    "medium": "Medium",
+    "high": "High",
+    "very_high": "Very high",
+    "ultra": "Ultra",
 }
 
 
