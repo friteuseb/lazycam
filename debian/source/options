@@ -1,0 +1,8 @@
+# The APT repository under docs/apt/ contains .deb files and signatures.
+# Launchpad rejects source packages that ship binaries, and they are rebuilt by
+# packaging/update-apt-repo.sh anyway, so keep them out of the source tarball.
+tar-ignore = "docs/apt"
+tar-ignore = "dist"
+tar-ignore = ".git"
+tar-ignore = "*/__pycache__"
+tar-ignore = "*.pyc"

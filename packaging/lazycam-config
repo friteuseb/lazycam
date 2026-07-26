@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Launcher installed as /usr/bin/lazycam-config by the .deb, the PPA package and
+# the AUR package. install.sh (source install) writes its own copy pointing at
+# ~/.local/share/lazycam instead.
+exec python3 /usr/share/lazycam/lazycam-gui.py "$@"

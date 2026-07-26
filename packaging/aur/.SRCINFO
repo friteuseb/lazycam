@@ -1,0 +1,24 @@
+pkgbase = lazycam
+	pkgdesc = One-key screen recorder for GNOME on Wayland: press Super+R, it records screen and voice; press again, it is edited
+	pkgver = 0.2.0
+	pkgrel = 1
+	url = https://github.com/friteuseb/lazycam
+	arch = any
+	license = GPL-3.0-or-later
+	depends = bash
+	depends = python
+	depends = python-gobject
+	depends = gtk4
+	depends = libadwaita
+	depends = jq
+	depends = ffmpeg
+	depends = pipewire
+	depends = wireplumber
+	depends = libnotify
+	depends = glib2
+	depends = gpu-screen-recorder
+	optdepends = showmethekey: on-screen overlay of the keys you press while recording
+	source = lazycam-0.2.0.tar.gz::https://github.com/friteuseb/lazycam/archive/refs/tags/v0.2.0.tar.gz
+	sha256sums = REPLACE_ME_RUN_packaging_update-aur.sh
+
+pkgname = lazycam

@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    echo ""
+    echo "lazycam installed. Two steps remain on your side:"
+    echo "  1) Capture engine (once):"
+    echo "       flatpak install -y flathub com.dec05eba.gpu_screen_recorder"
+    echo "  2) Enable the Super+R shortcut:"
+    echo "       lazycam-shortcuts        (or from lazycam-config)"
+    echo ""
+    echo "   Shortcuts live in per-user dconf, which a root postinst cannot write."
+    echo ""
+fi
+
+#DEBHELPER#
+
+exit 0

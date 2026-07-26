@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+SCRIPTS = gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcuts
+DEST    = debian/lazycam
+
+%:
+	dh $@
+
+# Nothing to compile: bash scripts and Python.
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_clean:
+
+override_dh_auto_install:
+	install -d $(DEST)/usr/bin
+	install -d $(DEST)/usr/share/lazycam
+	install -d $(DEST)/usr/share/applications
+	install -d $(DEST)/usr/share/icons/hicolor/scalable/apps
+	for f in $(SCRIPTS); do install -m 0755 bin/$$f $(DEST)/usr/bin/$$f; done
+	install -m 0755 packaging/lazycam-config $(DEST)/usr/bin/lazycam-config
+	install -m 0644 gui/lazycam_backend.py $(DEST)/usr/share/lazycam/lazycam_backend.py
+	install -m 0644 gui/lazycam-gui.py $(DEST)/usr/share/lazycam/lazycam-gui.py
+	install -m 0644 data/org.friteuseb.lazycam.desktop \
+		$(DEST)/usr/share/applications/org.friteuseb.lazycam.desktop
+	install -m 0644 data/icon.svg \
+		$(DEST)/usr/share/icons/hicolor/scalable/apps/org.friteuseb.lazycam.svg

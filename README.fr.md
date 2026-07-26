@@ -398,7 +398,9 @@ propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
 bin/        scripts moteur (bash) + lazycam-shortcuts
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (logique pure, testable)
 data/       icône + fichier .desktop
-packaging/  build-deb.sh + update-apt-repo.sh
+packaging/  build-deb.sh, update-apt-repo.sh, build-ppa.sh, update-aur.sh,
+            make-demo.sh, lazycam-config (le lanceur /usr/bin), aur/
+debian/     paquet source pour le PPA Launchpad (debhelper)
 docs/       site web (GitHub Pages, EN sur /, FR sur /fr/) + docs/apt/ (dépôt APT)
 install.sh / uninstall.sh
 ```
@@ -424,6 +426,52 @@ gh release create v0.2.0 dist/lazycam_0.2.0_all.deb --title "lazycam v0.2.0"
 > (hors du dépôt git, **jamais commitée**). **Sauvegarde ce dossier** : sans lui,
 > tu ne peux plus signer de mise à jour et les utilisateurs devront ré-importer
 > une nouvelle clé. La clé publique distribuée est `docs/apt/lazycam.gpg`.
+
+### Canaux de distribution
+
+| Canal | État | Construit par |
+|-------|------|---------------|
+| Dépôt APT auto-hébergé | **en ligne** | `packaging/update-apt-repo.sh` |
+| `.deb` des releases GitHub | **en ligne** | `packaging/build-deb.sh` |
+| PPA Launchpad | pas encore publié | `packaging/build-ppa.sh` |
+| AUR | pas encore publié | `packaging/update-aur.sh` |
+
+Le PPA et l'AUR sont volontairement absents de la section [Installation](#installation)
+destinée aux utilisateurs : ils n'y seront documentés qu'une fois réellement joignables.
+
+#### PPA Launchpad
+
+Launchpad n'accepte que des envois **source**, un par série Ubuntu, et construit
+lui-même les binaires — d'où l'arborescence `debian/` (`3.0 (native)`,
+`debhelper-compat 13`) à côté du chemin `dpkg-deb` de `build-deb.sh`.
+
+```bash
+sudo apt install devscripts debhelper dput      # le script ne les installe pas
+export LAZYCAM_PPA_KEY=<keyid>                  # une clé enregistrée sur Launchpad,
+                                                # PAS celle de ~/.lazycam-apt-gnupg
+./packaging/build-ppa.sh 0.2.0 noble jammy      # → dist/ppa/
+dput ppa:friteuseb/lazycam dist/ppa/lazycam_0.2.0~noble1_source.changes
+```
+
+Avant le premier envoi il faut un compte Launchpad, une clé GPG enregistrée dessus,
+le Code de conduite Ubuntu signé, et le PPA créé côté Launchpad.
+`debian/source/options` exclut `docs/apt/` du tarball source — Launchpad refuse les
+paquets source contenant des binaires.
+
+#### AUR
+
+```bash
+./packaging/update-aur.sh 0.2.0                 # après avoir taggé et poussé v0.2.0
+git clone ssh://aur@aur.archlinux.org/lazycam.git aur-lazycam
+cp packaging/aur/PKGBUILD packaging/aur/.SRCINFO aur-lazycam/
+cd aur-lazycam && git add -A && git commit -m "lazycam 0.2.0" && git push
+```
+
+`update-aur.sh` renseigne `pkgver` et `sha256sums` depuis le tag publié et régénère
+`.SRCINFO` sans avoir besoin de `makepkg` (qui n'existe pas sous Ubuntu). Sur Arch,
+`gpu-screen-recorder` est un vrai paquet et non un Flatpak : c'est donc une
+dépendance dure là-bas ; `GSR_CMD` dans `bin/gsr-common.sh` prend le binaire natif
+s'il est dans le `PATH` et retombe sur Flatpak sinon.
 
 ---
 

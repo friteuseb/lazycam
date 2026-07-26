@@ -84,7 +84,7 @@ else
     read -ra VARGS <<< "$(video_capture_args)"
 
     # 1) vidéo (gsr, SANS audio)
-    flatpak run --command=gpu-screen-recorder "$APP" \
+    "${GSR_CMD[@]}" \
         "${VARGS[@]}" \
         -f "$FPS" -k "$CODEC" -q "$QUALITY" \
         -o "$VIDEO" >/dev/null 2>&1 &

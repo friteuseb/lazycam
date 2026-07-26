@@ -47,6 +47,16 @@ AUDIO_CHAIN=""
 [ -n "$VOICE_FILTER" ] && AUDIO_CHAIN="${AUDIO_CHAIN:+$AUDIO_CHAIN,}$VOICE_FILTER"
 
 APP=com.dec05eba.gpu_screen_recorder
+# Invocation du moteur de capture. Ubuntu/Debian n'ont pas de paquet
+# gpu-screen-recorder : il n'existe qu'en Flatpak. Arch (AUR) et d'autres
+# distributions l'empaquettent nativement, et le binaire est alors dans le PATH.
+# GSR_CMD absorbe les deux cas — sans ça, lazycam ne marche que sur les systèmes
+# où le moteur est en Flatpak.
+if command -v gpu-screen-recorder >/dev/null 2>&1; then
+    GSR_CMD=(gpu-screen-recorder)
+else
+    GSR_CMD=(flatpak run --command=gpu-screen-recorder "$APP")
+fi
 # Le VRAI process a comm="gpu-screen-reco" (tronqué à 15c). Les wrappers sont
 # "bwrap" : il NE FAUT PAS leur envoyer SIGUSR2 (ça tuerait l'enregistrement).
 # MATCH générique (-w suivi de n'importe quel mode : portal, un moniteur, region…)
@@ -94,7 +104,7 @@ video_capture_args() {
             region="$(jcfg '.region' '')"
             [ -n "$region" ] && { printf -- '-w region -region %s' "$region"; return; } ;;
         monitor)
-            mons="$(flatpak run --command=gpu-screen-recorder "$APP" --list-monitors 2>/dev/null | cut -d'|' -f1)"
+            mons="$("${GSR_CMD[@]}" --list-monitors 2>/dev/null | cut -d'|' -f1)"
             order="$(jarr '.screen_order')"
             [ -z "$order" ] && order=$'DP\nHDMI\neDP'
             while IFS= read -r pat; do

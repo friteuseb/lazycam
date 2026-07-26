@@ -33,11 +33,7 @@ done
 # GUI (lib) + lanceur
 install -m 0644 "$ROOT/gui/lazycam_backend.py" "$STAGE/usr/share/lazycam/lazycam_backend.py"
 install -m 0644 "$ROOT/gui/lazycam-gui.py"     "$STAGE/usr/share/lazycam/lazycam-gui.py"
-cat > "$STAGE/usr/bin/lazycam-config" <<'EOF'
-#!/usr/bin/env bash
-exec python3 /usr/share/lazycam/lazycam-gui.py "$@"
-EOF
-chmod 0755 "$STAGE/usr/bin/lazycam-config"
+install -m 0755 "$ROOT/packaging/lazycam-config" "$STAGE/usr/bin/lazycam-config"
 
 # entrée de menu + icône (nommées d'après l'app-id)
 install -m 0644 "$ROOT/data/org.friteuseb.lazycam.desktop" \
@@ -75,13 +71,13 @@ Recommends: flatpak
 Section: video
 Priority: optional
 Homepage: https://github.com/friteuseb/lazycam
-Description: Enregistreur d'écran « une touche » pour GNOME
- lazycam filme l'écran et la voix d'un seul raccourci (Super+R), choisit
- automatiquement le micro et l'écran selon un ordre de préférence, gère la
- pause/reprise et monte automatiquement la vidéo à l'arrêt.
+Description: one-key screen recorder for GNOME on Wayland
+ lazycam records your screen and your voice from a single shortcut (Super+R),
+ picks the microphone and the monitor automatically from a preference order,
+ handles pause/resume, and edits the video automatically when you stop.
  .
- Surcouche au moteur GPU Screen Recorder (à installer via Flatpak).
- Inclut une interface de configuration GTK4 (lazycam-config).
+ A thin layer on top of the GPU Screen Recorder engine (installed via Flatpak).
+ Includes a GTK4 configuration interface (lazycam-config).
 EOF
 
 # postinst : caches système + rappels (les raccourcis sont par-utilisateur).
@@ -94,11 +90,11 @@ if [ "$1" = "configure" ]; then
     command -v gtk-update-icon-cache >/dev/null 2>&1 && \
         gtk-update-icon-cache -qtf /usr/share/icons/hicolor 2>/dev/null || true
     echo ""
-    echo "lazycam installé. Deux étapes côté utilisateur :"
-    echo "  1) Moteur de capture (une fois) :"
+    echo "lazycam installed. Two steps remain on your side:"
+    echo "  1) Capture engine (once):"
     echo "       flatpak install -y flathub com.dec05eba.gpu_screen_recorder"
-    echo "  2) Activer le raccourci Super+R :"
-    echo "       lazycam-shortcuts        (ou via lazycam-config)"
+    echo "  2) Enable the Super+R shortcut:"
+    echo "       lazycam-shortcuts        (or from lazycam-config)"
     echo ""
 fi
 exit 0

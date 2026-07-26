@@ -99,11 +99,23 @@ def list_mics() -> list[dict]:
     return mics
 
 
+def gsr_cmd() -> list[str]:
+    """Invocation du moteur de capture : binaire natif si présent, sinon Flatpak.
+
+    Ubuntu/Debian n'empaquettent pas gpu-screen-recorder (Flatpak uniquement) ;
+    Arch et d'autres l'ont en natif. Doit rester aligné sur GSR_CMD dans
+    bin/gsr-common.sh.
+    """
+    if shutil.which("gpu-screen-recorder"):
+        return ["gpu-screen-recorder"]
+    return ["flatpak", "run", "--command=gpu-screen-recorder", APP_ID]
+
+
 def list_monitors() -> list[dict]:
     """Moniteurs vus par le moteur : [{name, res}]."""
     try:
         out = subprocess.run(
-            ["flatpak", "run", "--command=gpu-screen-recorder", APP_ID, "--list-monitors"],
+            gsr_cmd() + ["--list-monitors"],
             capture_output=True, text=True, timeout=15).stdout
     except Exception:
         return []

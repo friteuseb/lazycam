@@ -2,6 +2,8 @@
 *.mp4
 *.flac
 *.state
+# ...sauf les assets de démo du site, qui doivent être versionnés
+!docs/demo.mp4
 # artefacts de build (.deb) — vont sur les releases GitHub, pas dans le code
 dist/
 __pycache__/
