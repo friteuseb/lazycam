@@ -25,6 +25,8 @@ GIF_FPS=12
 OUTDIR="$ROOT/docs"
 FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf
 KEY_RANGES=()
+ENDCARD=""
+ENDCARD_DUR=2
 
 usage() {
     sed -n '2,17p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
@@ -39,10 +41,19 @@ Options:
   --key START:END    draw a "Super + R" badge between these two times,
                      in seconds and relative to the trimmed clip.
                      Repeatable: --key 0.5:2 --key 12:13.5
+  --endcard "A|B"    append a closing card with A as the headline and B under
+                     it. A self-recorded demo stops before lazycam finishes
+                     writing the file, so the payoff — "and here is the MP4" —
+                     cannot be in the footage. This states it instead of
+                     faking a screenshot of it.
+  --endcard-dur SEC  how long the closing card lasts     (default 2)
   --outdir DIR       where to write the assets           (default docs/)
   -h, --help         this help
 EOF
 }
+
+# escape a string for use inside a drawtext text= option
+dt_escape() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e "s/'/\\\\'/g" -e 's/:/\\:/g' -e 's/%/\\%/g'; }
 
 [ $# -ge 1 ] || { usage; exit 1; }
 SRC="$1"; shift
@@ -56,6 +67,8 @@ while [ $# -gt 0 ]; do
         --gif-fps)   GIF_FPS="$2";   shift 2 ;;
         --outdir)    OUTDIR="$2";    shift 2 ;;
         --key)       KEY_RANGES+=("$2"); shift 2 ;;
+        --endcard)     ENDCARD="$2";     shift 2 ;;
+        --endcard-dur) ENDCARD_DUR="$2"; shift 2 ;;
         -h|--help)   usage; exit 0 ;;
         *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
     esac
@@ -66,7 +79,9 @@ command -v ffmpeg >/dev/null || { echo "ffmpeg is required (sudo apt install ffm
 mkdir -p "$OUTDIR"
 
 # --- video filter chain ----------------------------------------------------
-filters="scale=${WIDTH}:-2:flags=lanczos"
+# `badges` holds only the drawtext overlays; the scale filter is prepended per
+# branch below, because the closing card needs an explicit height to concat.
+badges=""
 
 if [ ${#KEY_RANGES[@]} -gt 0 ]; then
     if [ ! -f "$FONT" ]; then
@@ -79,10 +94,10 @@ if [ ${#KEY_RANGES[@]} -gt 0 ]; then
             echo "Malformed --key '$range' — expected START:END, e.g. 0.5:2" >&2
             exit 1
         fi
-        filters+=",drawtext=fontfile='${FONT}':text='Super + R'"
-        filters+=":fontcolor=white:fontsize=h/22:box=1:boxcolor=0x1e1e2e@0.82:boxborderw=20"
-        filters+=":x=(w-text_w)/2:y=h-text_h-h/12"
-        filters+=":enable='between(t\,${from}\,${to})'"
+        badges+=",drawtext=fontfile='${FONT}':text='Super + R'"
+        badges+=":fontcolor=white:fontsize=h/22:box=1:boxcolor=0x1e1e2e@0.82:boxborderw=20"
+        badges+=":x=(w-text_w)/2:y=h-text_h-h/12"
+        badges+=":enable='between(t\,${from}\,${to})'"
     done
 fi
 
@@ -94,11 +109,44 @@ echo
 
 # --- 1) demo.mp4 -----------------------------------------------------------
 echo "[1/3] demo.mp4"
-ffmpeg -hide_banner -loglevel error -y \
-    -ss "$START" -i "$SRC" -t "$DURATION" \
-    -vf "$filters" \
-    -an -c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart \
-    "$OUTDIR/demo.mp4"
+X264=(-c:v libx264 -preset slow -crf 28 -pix_fmt yuv420p -movflags +faststart)
+
+if [ -z "$ENDCARD" ]; then
+    ffmpeg -hide_banner -loglevel error -y \
+        -ss "$START" -i "$SRC" -t "$DURATION" \
+        -vf "scale=${WIDTH}:-2:flags=lanczos${badges}" \
+        -an "${X264[@]}" "$OUTDIR/demo.mp4"
+else
+    [ -f "$FONT" ] || { echo "Font not found: $FONT" >&2; exit 1; }
+    # Match the card to the scaled clip exactly, otherwise concat refuses.
+    IFS=, read -r SW SH < <(ffprobe -v error -select_streams v:0 \
+        -show_entries stream=width,height -of csv=p=0 "$SRC")
+    CH=$(( (SH * WIDTH / SW + 1) / 2 * 2 ))
+    FPS_OUT=30
+
+    head="${ENDCARD%%|*}"
+    sub=""
+    [ "$ENDCARD" != "$head" ] && sub="${ENDCARD#*|}"
+
+    card="drawtext=fontfile='${FONT}':text='$(dt_escape "$head")'"
+    card+=":fontcolor=0xcdd6f4:fontsize=h/16:x=(w-text_w)/2"
+    card+=":y=(h-text_h)/2-$([ -n "$sub" ] && echo 'h/22' || echo '0')"
+    if [ -n "$sub" ]; then
+        card+=",drawtext=fontfile='${FONT}':text='$(dt_escape "$sub")'"
+        card+=":fontcolor=0x7f849c:fontsize=h/28:x=(w-text_w)/2:y=(h+text_h)/2+h/28"
+    fi
+
+    # -t must precede -i here: after it, ffmpeg would attach it to the *next*
+    # input (the colour card) instead of trimming the source.
+    ffmpeg -hide_banner -loglevel error -y \
+        -ss "$START" -t "$DURATION" -i "$SRC" \
+        -f lavfi -t "$ENDCARD_DUR" -i "color=c=0x1e1e2e:s=${WIDTH}x${CH}:r=${FPS_OUT}" \
+        -filter_complex \
+          "[0:v]scale=${WIDTH}:${CH}:flags=lanczos${badges},fps=${FPS_OUT},setsar=1[main];\
+           [1:v]${card},fps=${FPS_OUT},setsar=1[card];\
+           [main][card]concat=n=2:v=1:a=0[out]" \
+        -map "[out]" -an "${X264[@]}" "$OUTDIR/demo.mp4"
+fi
 
 # --- 2) demo-poster.png ----------------------------------------------------
 echo "[2/3] demo-poster.png"

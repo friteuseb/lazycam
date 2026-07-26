@@ -16,13 +16,11 @@ A thin layer on top of [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen
 
 </div>
 
-<!-- DEMO — uncomment once docs/demo.gif exists (see packaging/make-demo.sh)
 <div align="center">
 
 ![lazycam in action: Super+R starts the recording, Super+R again produces a finished MP4](docs/demo.gif)
 
 </div>
--->
 
 ---
 

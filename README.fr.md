@@ -16,13 +16,11 @@ Surcouche à [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/
 
 </div>
 
-<!-- DÉMO — décommenter dès que docs/demo.gif existe (voir packaging/make-demo.sh)
 <div align="center">
 
 ![lazycam en action : Super+R lance l'enregistrement, Super+R à nouveau produit le MP4 fini](docs/demo.gif)
 
 </div>
--->
 
 ---
 
