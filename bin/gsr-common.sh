@@ -47,17 +47,7 @@ AUDIO_CHAIN=""
 [ -n "$VOICE_FILTER" ] && AUDIO_CHAIN="${AUDIO_CHAIN:+$AUDIO_CHAIN,}$VOICE_FILTER"
 
 # --- Langue des notifications ---------------------------------------------
-# Mêmes règles que la GUI (clé "lang" de config.json : auto | en | fr), pour
-# que les notifications ne soient pas dans une autre langue que la fenêtre.
-UI_LANG="$(jcfg '.lang' auto)"
-if [ "$UI_LANG" = "auto" ]; then
-    case "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" in
-        fr*) UI_LANG=fr ;;
-        *)   UI_LANG=en ;;
-    esac
-fi
-# msg <anglais> <français> : la chaîne dans la langue retenue.
-msg() { [ "$UI_LANG" = "fr" ] && printf '%s' "$2" || printf '%s' "$1"; }
+. "$(dirname "${BASH_SOURCE[0]}")/lazycam-lang.sh"
 # Titre commun des notifications.
 NTITLE="$(msg 'Recording' 'Enregistrement')"
 
@@ -95,13 +85,15 @@ dock_connected() {
         | grep -qE "'(DP|HDMI|DVI|VGA|DisplayPort)-"
 }
 
-# renvoie "<filepath>\t<libellé>" : token portal à utiliser + écran décrit
+# renvoie "<filepath>\t<libellé>" : token portal à utiliser + écran décrit.
+# NB : le libellé n'est actuellement affiché nulle part (l'appelant le jette),
+# il passe quand même par msg() pour rester juste s'il devient visible.
 video_token() {
     mkdir -p "$TOKEN_DIR"
     if dock_connected; then
-        printf '%s\t%s' "$TOKEN_DIR/docked.token" "écran 2 (station)"
+        printf '%s\t%s' "$TOKEN_DIR/docked.token" "$(msg 'monitor 2 (dock)' 'écran 2 (station)')"
     else
-        printf '%s\t%s' "$TOKEN_DIR/laptop.token" "écran du portable"
+        printf '%s\t%s' "$TOKEN_DIR/laptop.token" "$(msg 'laptop screen' 'écran du portable')"
     fi
 }
 

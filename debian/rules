@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 
-SCRIPTS = gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcuts
-DEST    = debian/lazycam
+DEST = debian/lazycam
 
 %:
 	dh $@
@@ -16,7 +15,7 @@ override_dh_auto_install:
 	install -d $(DEST)/usr/share/lazycam
 	install -d $(DEST)/usr/share/applications
 	install -d $(DEST)/usr/share/icons/hicolor/scalable/apps
-	for f in $(SCRIPTS); do install -m 0755 bin/$$f $(DEST)/usr/bin/$$f; done
+	install -m 0755 -t $(DEST)/usr/bin bin/*
 	install -m 0755 packaging/lazycam-config $(DEST)/usr/bin/lazycam-config
 	install -m 0644 gui/*.py $(DEST)/usr/share/lazycam/
 	install -m 0644 data/org.friteuseb.lazycam.desktop \

@@ -26,8 +26,10 @@ install -d "$STAGE/usr/bin" \
            "$STAGE/DEBIAN"
 
 # scripts moteur + raccourcis
-for f in gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcuts; do
-    install -m 0755 "$ROOT/bin/$f" "$STAGE/usr/bin/$f"
+# glob sur bin/ : un nouveau script est empaqueté sans toucher à une liste.
+for f in "$ROOT"/bin/*; do
+    [ -f "$f" ] || continue
+    install -m 0755 "$f" "$STAGE/usr/bin/$(basename "$f")"
 done
 
 # GUI (lib) + lanceur

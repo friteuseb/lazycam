@@ -213,8 +213,13 @@ The interface is in English, with French available. `auto` — the default — f
 your locale (`LC_ALL` / `LC_MESSAGES` / `LANG`), so a French desktop gets French
 without touching anything, and everyone else gets English. Switching language
 redraws the window immediately; like every other setting it is only written to
-`config.json` when you click **Apply**. The `Super+R` notifications follow the same
-setting, so the window and the notifications never end up in different languages.
+`config.json` when you click **Apply**.
+
+Everything else follows the same setting — the `Super+R` notifications, the names
+the shortcuts get in GNOME Settings, `gsr-config.sh`, `install.sh` and
+`uninstall.sh` — so no two parts of lazycam ever end up in different languages.
+The shell side reads the setting from `bin/lazycam-lang.sh`, which mirrors the
+rules in `gui/lazycam_i18n.py`.
 
 To reorder a list, use the **↑ ↓** arrows on each row. To remove an entry: 🗑. To
 add a detected one: **＋**.
@@ -402,6 +407,7 @@ in sync.
 
 ```
 bin/        engine scripts (bash) + lazycam-shortcuts
+            + lazycam-lang.sh (shell side of the language setting)
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (pure, testable logic)
             + lazycam_i18n.py (English source strings, French catalogue)
 data/       icon + .desktop file

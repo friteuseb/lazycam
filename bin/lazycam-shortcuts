@@ -15,11 +15,16 @@ SELF_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 TOGGLE="$SELF_DIR/gsr-toggle.sh"
 PAUSE="$SELF_DIR/gsr-pause.sh"
 
+. "$SELF_DIR/lazycam-lang.sh"
+
 SCHEMA=org.gnome.settings-daemon.plugins.media-keys
 LISTKEY=custom-keybindings
 BASE=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
 
-command -v gsettings >/dev/null || { echo "gsettings introuvable (hors GNOME ?)" >&2; exit 1; }
+command -v gsettings >/dev/null || {
+    say 'gsettings not found (not running GNOME?)' 'gsettings introuvable (hors GNOME ?)' >&2
+    exit 1
+}
 
 # --- lecture du tableau des raccourcis custom existants ---
 raw="$(gsettings get "$SCHEMA" "$LISTKEY")"
@@ -48,13 +53,13 @@ if [ "${1:-}" = "--remove" ]; then
         case "$cmd" in
             *"/gsr-toggle.sh'"|*"/gsr-pause.sh'")
                 gsettings reset-recursively "$SCHEMA.custom-keybinding:$p" 2>/dev/null
-                echo "retiré : $cmd" ;;
+                printf '%s %s\n' "$(msg 'removed:' 'retiré :')" "$cmd" ;;
             *) kept+=("$p") ;;
         esac
     done
     existing=("${kept[@]+"${kept[@]}"}")
     write_array
-    echo "Raccourcis lazycam retirés."
+    say 'lazycam shortcuts removed.' 'Raccourcis lazycam retirés.'
     exit 0
 fi
 
@@ -76,7 +81,12 @@ ensure_kb() {
     echo "$bind → $name"
 }
 
-ensure_kb "lazycam : enregistrer (start/stop)" "$TOGGLE" "<Super>r"
-ensure_kb "lazycam : pause / reprise"          "$PAUSE"  "<Super><Shift>r"
+# Ces noms apparaissent dans Paramètres > Clavier : ils suivent donc la
+# langue choisie, comme la fenêtre et les notifications.
+ensure_kb "$(msg 'lazycam: record (start/stop)' 'lazycam : enregistrer (start/stop)')" \
+          "$TOGGLE" "<Super>r"
+ensure_kb "$(msg 'lazycam: pause / resume' 'lazycam : pause / reprise')" \
+          "$PAUSE"  "<Super><Shift>r"
 write_array
-echo "Raccourcis lazycam activés (Super+R, Super+Shift+R)."
+say 'lazycam shortcuts enabled (Super+R, Super+Shift+R).' \
+    'Raccourcis lazycam activés (Super+R, Super+Shift+R).'

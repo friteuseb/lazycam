@@ -216,8 +216,13 @@ L'interface est en anglais, le français reste disponible. `auto` — le défaut
 ta locale (`LC_ALL` / `LC_MESSAGES` / `LANG`) : un bureau français obtient donc le
 français sans rien régler, et les autres l'anglais. Changer de langue redessine la
 fenêtre immédiatement ; comme tout le reste, ce n'est écrit dans `config.json` qu'au
-clic sur **Appliquer**. Les notifications de `Super+R` suivent le même réglage, pour
-que la fenêtre et les notifications ne soient jamais dans deux langues différentes.
+clic sur **Appliquer**.
+
+Tout le reste suit le même réglage — les notifications de `Super+R`, le nom que
+prennent les raccourcis dans les Paramètres GNOME, `gsr-config.sh`, `install.sh` et
+`uninstall.sh` — pour que deux parties de lazycam ne soient jamais dans des langues
+différentes. Côté shell, le réglage est lu par `bin/lazycam-lang.sh`, qui reprend
+les règles de `gui/lazycam_i18n.py`.
 
 Pour réordonner une liste : les flèches **↑ ↓** de chaque ligne. Pour en retirer
 un : 🗑. Pour en ajouter un détecté : **＋**.
@@ -406,6 +411,7 @@ propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
 
 ```
 bin/        scripts moteur (bash) + lazycam-shortcuts
+            + lazycam-lang.sh (côté shell du réglage de langue)
 gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (logique pure, testable)
             + lazycam_i18n.py (chaînes sources anglaises, catalogue français)
 data/       icône + fichier .desktop

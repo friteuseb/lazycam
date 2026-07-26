@@ -30,9 +30,7 @@ sha256sums=('REPLACE_ME_RUN_packaging_update-aur.sh')
 package() {
     cd "$srcdir/$pkgname-$pkgver"
 
-    for f in gsr-common.sh gsr-toggle.sh gsr-pause.sh gsr-config.sh lazycam-shortcuts; do
-        install -Dm755 "bin/$f" "$pkgdir/usr/bin/$f"
-    done
+    install -Dm755 -t "$pkgdir/usr/bin" bin/*
     install -Dm755 packaging/lazycam-config "$pkgdir/usr/bin/lazycam-config"
 
     install -Dm644 -t "$pkgdir/usr/share/lazycam" gui/*.py
