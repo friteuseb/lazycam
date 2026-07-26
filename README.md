@@ -324,9 +324,28 @@ in sync.
 ## Tutorial helpers
 
 - **Pressed keys**: enable *"Show pressed keys"* in `lazycam-config`. Requires
-  [showmethekey](https://github.com/AlynxZhou/showmethekey):
-  `flatpak install -y flathub one.alynx.showmethekey`. lazycam starts it when the
-  recording starts and stops it when you stop.
+  [showmethekey](https://github.com/AlynxZhou/showmethekey), which lazycam starts
+  when the recording starts and stops when you stop.
+
+  ⚠️ **There is no Flathub or apt package for Ubuntu/Debian.** Upstream only ships
+  packages for Arch, Fedora and openSUSE, so you have to build it:
+
+  ```bash
+  sudo apt install meson ninja-build gcc git libevdev-dev libinput-dev libudev-dev \
+      libglib2.0-dev libgtk-4-dev libadwaita-1-dev libjson-glib-dev libcairo2-dev \
+      libpango1.0-dev libxkbcommon-dev polkitd pkexec
+  git clone https://github.com/AlynxZhou/showmethekey.git
+  cd showmethekey && mkdir build && cd build
+  meson setup --prefix=/usr . .. && meson compile && sudo meson install
+  ```
+
+  lazycam picks up the `showmethekey-gtk` binary automatically once it is on your
+  `PATH`. Note that showmethekey reads `/dev/input` through a privileged helper, so
+  it asks for authentication — do that once before you start recording, otherwise
+  the polkit dialog lands in the middle of your video.
+
+  For a one-off demo clip it is usually simpler to add the keypress in post:
+  `packaging/make-demo.sh --key START:END` draws a "Super + R" badge over the video.
 - **Click highlighting**: not available yet — under Wayland this needs a GNOME Shell
   extension, which isn't shipped for now.
 

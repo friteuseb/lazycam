@@ -271,7 +271,8 @@ class LazycamWindow(Adw.ApplicationWindow):
         self.page.add(g)
         keys = Adw.SwitchRow(title="Afficher les touches pressées")
         if not B.have_showmethekey():
-            keys.set_subtitle("Nécessite : flatpak install flathub one.alynx.showmethekey")
+            keys.set_subtitle("Nécessite showmethekey — aucun paquet Ubuntu, "
+                              "à compiler depuis les sources (voir le README)")
         keys.set_active(bool(self.cfg.get("show_keys")))
         keys.connect("notify::active", lambda r, _: self._set("show_keys", r.get_active()))
         g.add(keys)

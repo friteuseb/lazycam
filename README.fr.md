@@ -327,9 +327,29 @@ propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
 ## Aides tuto
 
 - **Touches pressées** : active *« Afficher les touches pressées »* dans
-  `lazycam-config`. Nécessite [showmethekey](https://github.com/AlynxZhou/showmethekey) :
-  `flatpak install -y flathub one.alynx.showmethekey`. lazycam le lance au
-  démarrage de l'enregistrement et le coupe à l'arrêt.
+  `lazycam-config`. Nécessite [showmethekey](https://github.com/AlynxZhou/showmethekey),
+  que lazycam lance au démarrage de l'enregistrement et coupe à l'arrêt.
+
+  ⚠️ **Il n'existe aucun paquet Flathub ni apt pour Ubuntu/Debian.** Upstream ne
+  fournit des paquets que pour Arch, Fedora et openSUSE : il faut donc le compiler.
+
+  ```bash
+  sudo apt install meson ninja-build gcc git libevdev-dev libinput-dev libudev-dev \
+      libglib2.0-dev libgtk-4-dev libadwaita-1-dev libjson-glib-dev libcairo2-dev \
+      libpango1.0-dev libxkbcommon-dev polkitd pkexec
+  git clone https://github.com/AlynxZhou/showmethekey.git
+  cd showmethekey && mkdir build && cd build
+  meson setup --prefix=/usr . .. && meson compile && sudo meson install
+  ```
+
+  lazycam détecte automatiquement le binaire `showmethekey-gtk` dès qu'il est dans
+  ton `PATH`. Attention : showmethekey lit `/dev/input` via un assistant privilégié,
+  il demande donc une authentification — fais-la une fois **avant** de lancer
+  l'enregistrement, sinon la fenêtre polkit atterrit au milieu de ta vidéo.
+
+  Pour une simple vidéo de démo, il est souvent plus simple d'ajouter la touche en
+  post-production : `packaging/make-demo.sh --key DÉBUT:FIN` incruste un badge
+  « Super + R » sur la vidéo.
 - **Mise en évidence des clics** : pas encore disponible — sous Wayland ça
   demande une extension GNOME Shell, non livrée pour l'instant.
 
