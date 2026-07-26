@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lazycam — one-key screen recorder for Wayland (Ubuntu / GNOME)</title>
-<meta name="description" content="Record your screen and your voice with a single shortcut (Super+R) on Ubuntu / GNOME under Wayland. Mic and monitor picked automatically, publish-ready MP4. Free and open source, GPL-3.0.">
+<title>lazycam — enregistreur d'écran « une touche » pour Wayland (Ubuntu / GNOME)</title>
+<meta name="description" content="lazycam : filme ton écran et ta voix d'un seul raccourci (Super+R) sur Ubuntu / GNOME sous Wayland. Micro et écran choisis automatiquement, montage auto. Open source, GPL-3.0.">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="canonical" href="https://lazycam.coconweb.fr/">
+<link rel="canonical" href="https://lazycam.coconweb.fr/fr/">
 <link rel="alternate" hreflang="en" href="https://lazycam.coconweb.fr/">
 <link rel="alternate" hreflang="fr" href="https://lazycam.coconweb.fr/fr/">
 <link rel="alternate" hreflang="x-default" href="https://lazycam.coconweb.fr/">
-<meta property="og:title" content="lazycam — one-key screen recorder for Wayland">
-<meta property="og:description" content="Record your screen and your voice with a single shortcut on Ubuntu / GNOME. Free and open source.">
+<meta property="og:title" content="lazycam — enregistreur d'écran « une touche »">
+<meta property="og:description" content="Filme ton écran et ta voix d'un seul raccourci sur Ubuntu / GNOME. Open source.">
 <meta property="og:type" content="website">
-<meta property="og:locale" content="en_US">
-<meta property="og:locale:alternate" content="fr_FR">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_US">
 <style>
   :root{
     --base:#1e1e2e; --mantle:#181825; --crust:#11111b;
@@ -71,13 +71,13 @@
   .dlcount{display:none;margin-top:20px;color:var(--muted);font-size:.9rem}
   .dlcount b{color:var(--subtext);font-weight:700}
 
-  /* demo */
+  /* démo */
   .demo{margin:54px auto 0;max-width:760px;border-radius:14px;overflow:hidden;
     border:1px solid var(--surface0);box-shadow:0 24px 70px rgba(0,0,0,.5);background:var(--crust)}
   .demo video,.demo img{display:block;width:100%;height:auto}
   .demo-cap{color:var(--muted);font-size:.85rem;margin-top:12px;text-align:center}
 
-  /* app window mockup */
+  /* maquette fenêtre app */
   .mock{margin:60px auto 0;max-width:560px;background:var(--mantle);border:1px solid var(--surface0);
     border-radius:14px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.5);text-align:left}
   .mock-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--crust);
@@ -161,133 +161,133 @@
 <nav><div class="wrap">
   <a class="brand" href="#"><img src="/icon.svg" alt="">lazycam</a>
   <div class="nav-links">
-    <a href="#story">Story</a>
-    <a href="#features">Features</a>
-    <a href="#install">Install</a>
+    <a href="#story">Histoire</a>
+    <a href="#features">Fonctions</a>
+    <a href="#install">Installation</a>
     <a href="https://github.com/friteuseb/lazycam">GitHub ↗</a>
-    <a class="lang" href="/fr/" hreflang="fr" lang="fr">FR</a>
+    <a class="lang" href="/" hreflang="en" lang="en">EN</a>
   </div>
 </div></nav>
 
 <header class="hero"><div class="wrap">
   <span class="badge">v0.1.0 · open source · GPL-3.0</span>
-  <h1>Record your screen<br><span class="grad">with one key.</span></h1>
-  <p class="lead">lazycam records your screen <strong>and</strong> your voice when you press
-    <kbd>Super</kbd>+<kbd>R</kbd>. Press it again and it's edited. For Ubuntu / GNOME on Wayland.</p>
-  <p class="sub">Mic and monitor picked automatically · pause/resume · publish-ready MP4</p>
+  <h1>Filme ton écran<br><span class="grad">d'une seule touche.</span></h1>
+  <p class="lead">lazycam enregistre ton écran <strong>et</strong> ta voix quand tu appuies sur
+    <kbd>Super</kbd>+<kbd>R</kbd>. Tu réappuies, c'est monté. Pour Ubuntu / GNOME sous Wayland.</p>
+  <p class="sub">Micro et écran choisis automatiquement · pause/reprise · montage auto</p>
   <div class="cta">
-    <a class="btn btn-primary" href="#install">⬇ Install <small>· Ubuntu/Debian</small></a>
-    <a class="btn btn-ghost" href="https://github.com/friteuseb/lazycam">View on GitHub</a>
+    <a class="btn btn-primary" href="#install">⬇ Installer <small>· Ubuntu/Debian</small></a>
+    <a class="btn btn-ghost" href="https://github.com/friteuseb/lazycam">Voir sur GitHub</a>
   </div>
   <p class="dlcount" id="dlcount"></p>
 
-  <!-- DEMO — uncomment once docs/demo.mp4 + docs/demo-poster.png exist (see packaging/make-demo.sh)
+  <!-- DÉMO — décommenter dès que docs/demo.mp4 + docs/demo-poster.png existent (voir packaging/make-demo.sh)
   <div class="demo">
     <video src="/demo.mp4" poster="/demo-poster.png" autoplay loop muted playsinline
-           aria-label="Pressing Super+R starts the recording, pressing it again produces a finished MP4"></video>
+           aria-label="Un appui sur Super+R lance l'enregistrement, un second appui produit le MP4 fini"></video>
   </div>
-  <p class="demo-cap">15 seconds, recorded with lazycam itself.</p>
+  <p class="demo-cap">15 secondes, filmées avec lazycam lui-même.</p>
   -->
 
-  <!-- app window mockup -->
+  <!-- maquette de l'app -->
   <div class="mock">
     <div class="mock-bar">
-      <span class="pill rec">⏺ Record</span>
+      <span class="pill rec">⏺ Filmer</span>
       <span class="dots"><i></i><i></i><i></i></span>
-      <span class="title">lazycam — Settings</span>
-      <span class="pill save">Apply</span>
+      <span class="title">lazycam — Réglages</span>
+      <span class="pill save">Appliquer</span>
     </div>
     <div class="mock-body">
-      <div class="grp-label">Audio input — preference order</div>
-      <div class="row"><span class="handle">☰</span><div class="rt"><b>Amazon USB Streaming Mic</b><span><span class="dot on"></span>connected · preferred</span></div><div class="vu"><i style="height:60%"></i><i style="height:90%"></i><i style="height:45%"></i><i style="height:75%"></i></div></div>
-      <div class="row"><span class="handle">☰</span><div class="rt"><b>Webcam Creative Cam Sync</b><span><span class="dot off"></span>not connected</span></div></div>
-      <div class="row"><span class="handle">☰</span><div class="rt"><b>Built-in microphone</b><span><span class="dot on"></span>connected</span></div></div>
-      <div class="grp-label">Video source</div>
-      <div class="row"><span class="handle">☰</span><div class="rt"><b>Desk monitor (DP-2)</b><span><span class="dot on"></span>plugged in</span></div></div>
+      <div class="grp-label">Entrée audio — ordre de préférence</div>
+      <div class="row"><span class="handle">☰</span><div class="rt"><b>Amazon USB Streaming Mic</b><span><span class="dot on"></span>présent · prioritaire</span></div><div class="vu"><i style="height:60%"></i><i style="height:90%"></i><i style="height:45%"></i><i style="height:75%"></i></div></div>
+      <div class="row"><span class="handle">☰</span><div class="rt"><b>Webcam Creative Cam Sync</b><span><span class="dot off"></span>absent</span></div></div>
+      <div class="row"><span class="handle">☰</span><div class="rt"><b>Micro interne</b><span><span class="dot on"></span>présent</span></div></div>
+      <div class="grp-label">Source vidéo</div>
+      <div class="row"><span class="handle">☰</span><div class="rt"><b>Écran station (DP-2)</b><span><span class="dot on"></span>branché</span></div></div>
     </div>
   </div>
 </div></header>
 
 <section id="story"><div class="wrap">
-  <h2 class="sec-title">Why lazycam exists</h2>
-  <p class="sec-sub">I just wanted to record my screen for tutorials. Surprisingly hard on Linux.</p>
+  <h2 class="sec-title">Pourquoi lazycam existe</h2>
+  <p class="sec-sub">Je voulais juste filmer mon écran pour des tutos. Étonnamment compliqué sous Linux.</p>
   <div class="story">
     <div class="pain"><span class="pico">🏗️</span><div>
       <b>OBS Studio</b>
-      <p>A full production studio. Brilliant for streaming, wild overkill for pressing one button and recording three minutes.</p>
+      <p>Un studio de production complet. Formidable pour streamer, démesuré pour appuyer sur un bouton et filmer trois minutes.</p>
     </div></div>
     <div class="pain"><span class="pico">🌊</span><div>
-      <b>The other tools</b>
-      <p>The ones that hold up under Wayland still make you open a window, aim, click, configure. Every single time.</p>
+      <b>Les autres outils</b>
+      <p>Ceux qui tiennent la route sous Wayland demandent quand même d'ouvrir une fenêtre, viser, cliquer, régler. À chaque fois.</p>
     </div></div>
     <div class="pain"><span class="pico">🪟</span><div>
       <b>Bandicam</b>
-      <p>I loved how simple it was — press a key, it records. But it only exists on Windows.</p>
+      <p>J'adorais sa simplicité, ce côté « j'appuie, ça filme ». Mais il n'existe que sous Windows.</p>
     </div></div>
   </div>
-  <p class="punch">So I built the one I was missing:<br>
-    <strong>Bandicam's simplicity, on Linux, actually working under Wayland.</strong></p>
+  <p class="punch">Alors j'ai construit celui qui me manquait :<br>
+    <strong>la simplicité de Bandicam, sur Linux, qui marche vraiment sous Wayland.</strong></p>
 </div></section>
 
 <section id="features"><div class="wrap">
-  <h2 class="sec-title">Built for tutorials</h2>
-  <p class="sec-sub">The right gesture, without redoing the settings every time.</p>
+  <h2 class="sec-title">Pensé pour les tutos</h2>
+  <p class="sec-sub">Le bon geste, sans réglage à refaire à chaque fois.</p>
   <div class="features">
-    <div class="card"><div class="ico">⌨️</div><h3>One single key</h3><p><kbd>Super</kbd>+<kbd>R</kbd> starts and stops. No window to aim at, no click.</p></div>
-    <div class="card"><div class="ico">🎙️</div><h3>Automatic mic</h3><p>Preference order: USB › webcam › built-in. The first one plugged in wins, done.</p></div>
-    <div class="card"><div class="ico">🖥️</div><h3>Automatic monitor</h3><p>Docked or on the laptop: lazycam records the right screen based on what's connected.</p></div>
-    <div class="card"><div class="ico">⏯️</div><h3>Pause / resume</h3><p><kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> pauses without breaking audio sync.</p></div>
-    <div class="card"><div class="ico">✂️</div><h3>Auto edit</h3><p>On stop, voice and video are stitched back together and normalised into a publish-ready MP4.</p></div>
-    <div class="card"><div class="ico">🎛️</div><h3>Clear settings</h3><p>One GTK window to order mics and monitors, test your level, set the quality.</p></div>
+    <div class="card"><div class="ico">⌨️</div><h3>Une seule touche</h3><p><kbd>Super</kbd>+<kbd>R</kbd> démarre et arrête. Pas de fenêtre à viser, pas de clic.</p></div>
+    <div class="card"><div class="ico">🎙️</div><h3>Micro automatique</h3><p>Ordre de préférence : USB › webcam › interne. Le premier branché est pris, point.</p></div>
+    <div class="card"><div class="ico">🖥️</div><h3>Écran automatique</h3><p>Station d'accueil ou portable : lazycam filme le bon écran selon ce qui est branché.</p></div>
+    <div class="card"><div class="ico">⏯️</div><h3>Pause / reprise</h3><p><kbd>Super</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> met en pause sans casser la synchro audio.</p></div>
+    <div class="card"><div class="ico">✂️</div><h3>Montage auto</h3><p>À l'arrêt, voix et vidéo sont recollées et normalisées dans un MP4 prêt à publier.</p></div>
+    <div class="card"><div class="ico">🎛️</div><h3>Interface claire</h3><p>Une fenêtre GTK pour ordonner micros/écrans, tester le niveau, régler la qualité.</p></div>
   </div>
 </div></section>
 
 <section id="install" class="install"><div class="wrap">
-  <h2 class="sec-title">Install</h2>
-  <p class="sec-sub">On Ubuntu / Debian (GNOME). After that, updates come with
-    <code>apt upgrade</code> like the rest of your system.</p>
+  <h2 class="sec-title">Installation</h2>
+  <p class="sec-sub">Sur Ubuntu / Debian (GNOME). Ensuite, les mises à jour suivent
+    avec <code>apt upgrade</code> comme le reste du système.</p>
   <div class="reqs">
     <span class="req">Ubuntu / Debian</span>
-    <span class="req">GNOME desktop</span>
-    <span class="req">Built &amp; tested on Wayland</span>
+    <span class="req">Bureau GNOME</span>
+    <span class="req">Conçu &amp; testé sous Wayland</span>
     <span class="req">amd64 · arm64</span>
   </div>
   <div class="steps">
     <div class="step"><div class="num">1</div><div class="body">
-      <h4>Add the lazycam repository <span style="color:var(--muted);font-weight:400">(once)</span></h4>
-      <div class="code"><button class="cp">copy</button>sudo install -m 0755 -d /etc/apt/keyrings
+      <h4>Ajouter le dépôt lazycam <span style="color:var(--muted);font-weight:400">(une fois)</span></h4>
+      <div class="code"><button class="cp">copier</button>sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://lazycam.coconweb.fr/apt/lazycam.gpg | sudo tee /etc/apt/keyrings/lazycam.gpg >/dev/null
 echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/lazycam.gpg] https://lazycam.coconweb.fr/apt stable main" | sudo tee /etc/apt/sources.list.d/lazycam.list >/dev/null
 sudo apt update</div>
     </div></div>
     <div class="step"><div class="num">2</div><div class="body">
-      <h4>Install lazycam</h4>
-      <div class="code"><button class="cp">copy</button>sudo apt install lazycam</div>
+      <h4>Installer lazycam</h4>
+      <div class="code"><button class="cp">copier</button>sudo apt install lazycam</div>
     </div></div>
     <div class="step"><div class="num">3</div><div class="body">
-      <h4>Capture engine + shortcut <span style="color:var(--muted);font-weight:400">(once)</span></h4>
-      <div class="code"><button class="cp">copy</button>flatpak install -y flathub com.dec05eba.gpu_screen_recorder
+      <h4>Moteur de capture + raccourci <span style="color:var(--muted);font-weight:400">(une fois)</span></h4>
+      <div class="code"><button class="cp">copier</button>flatpak install -y flathub com.dec05eba.gpu_screen_recorder
 lazycam-shortcuts</div>
-      <p class="note">You can also enable the shortcut from the “Enable” button in <code>lazycam-config</code>.
-        That's it — press <kbd>Super</kbd>+<kbd>R</kbd>.</p>
+      <p class="note">Le raccourci s'active aussi via le bouton « Activer » dans <code>lazycam-config</code>.
+        C'est tout — appuie sur <kbd>Super</kbd>+<kbd>R</kbd>.</p>
     </div></div>
   </div>
   <p class="note" style="text-align:center;margin-top:26px">
-    Rather not add a repository? <a href="https://github.com/friteuseb/lazycam/releases/latest">Download the <code>.deb</code></a>
-    and run <code>sudo apt install ./lazycam_*.deb</code>.</p>
+    Tu préfères sans dépôt ? <a href="https://github.com/friteuseb/lazycam/releases/latest">Télécharge le <code>.deb</code></a>
+    et <code>sudo apt install ./lazycam_*.deb</code>.</p>
 </div></section>
 
 <footer><div class="wrap">
   <div class="fbrand"><img src="/icon.svg" alt="">lazycam</div>
-  <p>Free software under <a href="https://github.com/friteuseb/lazycam/blob/main/LICENSE">GPL-3.0</a> ·
-     <a href="https://github.com/friteuseb/lazycam">Source code</a> ·
-     <a href="https://github.com/friteuseb/lazycam/releases">Releases</a></p>
-  <p style="margin-top:8px">Powered by <a href="https://git.dec05eba.com/gpu-screen-recorder/">GPU Screen Recorder</a> ·
-     <a href="/fr/" hreflang="fr" lang="fr">Version française</a></p>
+  <p>Logiciel libre sous <a href="https://github.com/friteuseb/lazycam/blob/main/LICENSE">GPL-3.0</a> ·
+     <a href="https://github.com/friteuseb/lazycam">Code source</a> ·
+     <a href="https://github.com/friteuseb/lazycam/releases">Versions</a></p>
+  <p style="margin-top:8px">Propulsé par <a href="https://git.dec05eba.com/gpu-screen-recorder/">GPU Screen Recorder</a> ·
+     <a href="/" hreflang="en" lang="en">English version</a></p>
 </div></footer>
 
 <script>
-  // live download counter (GitHub API, hidden when unavailable)
+  // compteur de téléchargements en direct (API GitHub, masqué si indispo)
   fetch('https://api.github.com/repos/friteuseb/lazycam/releases')
     .then(function(r){return r.ok ? r.json() : Promise.reject();})
     .then(function(rels){
@@ -296,16 +296,16 @@ lazycam-shortcuts</div>
       },0);
       if(n>0){
         var e=document.getElementById('dlcount');
-        e.innerHTML='⬇ <b>'+n.toLocaleString('en-US')+'</b> .deb download'+(n>1?'s':'');
+        e.innerHTML='⬇ <b>'+n.toLocaleString('fr-FR')+'</b> téléchargement'+(n>1?'s':'')+' du .deb';
         e.style.display='block';
       }
     }).catch(function(){});
 
   document.querySelectorAll('.cp').forEach(function(btn){
     btn.addEventListener('click',function(){
-      var code=btn.parentNode.textContent.replace(/^copy/,'').trim();
+      var code=btn.parentNode.textContent.replace(/^copier/,'').trim();
       navigator.clipboard.writeText(code).then(function(){
-        var old=btn.textContent; btn.textContent='copied ✓';
+        var old=btn.textContent; btn.textContent='copié ✓';
         setTimeout(function(){btn.textContent=old;},1400);
       });
     });

@@ -2,74 +2,97 @@
 
 # 🎥 lazycam
 
-**Enregistreur d'écran « une touche » pour Ubuntu / GNOME Wayland.**
+**One-key screen recorder for Ubuntu / GNOME on Wayland.**
 
-*Tu appuies sur une touche, ça filme l'écran et ta voix. Tu réappuies, c'est monté.*
+*Press one key, it records your screen and your voice. Press it again, it's edited.*
 
-Surcouche à [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/) (NVENC / VAAPI, très faible impact CPU).
+A thin layer on top of [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/) (NVENC / VAAPI, very low CPU impact).
 
-[![Téléchargements](https://img.shields.io/github/downloads/friteuseb/lazycam/total?label=t%C3%A9l%C3%A9chargements&color=cba6f7)](https://github.com/friteuseb/lazycam/releases)
-[![Dernière version](https://img.shields.io/github/v/release/friteuseb/lazycam?label=version&color=f38ba8)](https://github.com/friteuseb/lazycam/releases/latest)
-[![Licence GPL-3.0](https://img.shields.io/badge/licence-GPL--3.0-89b4fa)](LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/friteuseb/lazycam/total?label=downloads&color=cba6f7)](https://github.com/friteuseb/lazycam/releases)
+[![Latest release](https://img.shields.io/github/v/release/friteuseb/lazycam?label=version&color=f38ba8)](https://github.com/friteuseb/lazycam/releases/latest)
+[![License GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-89b4fa)](LICENSE)
+
+[Website](https://lazycam.coconweb.fr/) · 🇫🇷 [Version française](README.fr.md)
 
 </div>
 
+<!-- DEMO — uncomment once docs/demo.gif exists (see packaging/make-demo.sh)
+<div align="center">
+
+![lazycam in action: Super+R starts the recording, Super+R again produces a finished MP4](docs/demo.gif)
+
+</div>
+-->
+
 ---
 
-## Sommaire
+## Requirements
 
-- [Pourquoi lazycam ?](#pourquoi-lazycam-)
-- [Installation](#installation)
-- [Démarrage rapide](#démarrage-rapide)
-- [Utilisation](#utilisation)
+| | |
+|---|---|
+| **Distribution** | Ubuntu / Debian (`.deb` package, `all` architecture) |
+| **Desktop** | GNOME — the `Super+R` shortcut is registered through GNOME settings |
+| **Session** | Built and tested on **Wayland**. Not tested on KDE, Xfce or X11. |
+| **CPU** | amd64 · arm64 |
+
+> lazycam is a **system integration tool**: it drives other programs and registers
+> GNOME shortcuts. If you are on KDE or another desktop, the recording engine will
+> work but the global shortcut will not be set up for you.
+
+---
+
+## Table of contents
+
+- [Why lazycam?](#why-lazycam)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Usage](#usage)
 - [Configuration](#configuration)
-  - [L'interface graphique](#linterface-graphique-lazycam-config)
-  - [Le fichier `config.json`](#le-fichier-configjson)
-  - [Logique de choix du micro et de l'écran](#logique-de-choix-du-micro-et-de-lécran)
-- [Comment ça marche](#comment-ça-marche)
-- [Aides tuto](#aides-tuto)
-- [Fichiers & emplacements](#fichiers--emplacements)
-- [Dépannage](#dépannage)
-- [Désinstallation](#désinstallation)
-- [Développement](#développement)
-- [Licence](#licence)
+  - [The graphical interface](#the-graphical-interface-lazycam-config)
+  - [The `config.json` file](#the-configjson-file)
+  - [How the mic and monitor are picked](#how-the-mic-and-monitor-are-picked)
+- [How it works](#how-it-works)
+- [Tutorial helpers](#tutorial-helpers)
+- [Files & locations](#files--locations)
+- [Troubleshooting](#troubleshooting)
+- [Uninstall](#uninstall)
+- [Development](#development)
+- [License](#license)
 
 ---
 
-## Pourquoi lazycam ?
+## Why lazycam?
 
-Je voulais juste filmer mon écran pour des tutos. Étonnamment compliqué sous Linux :
-**OBS Studio** est un studio de production complet — formidable pour streamer,
-démesuré pour appuyer sur un bouton et filmer trois minutes ; les **autres outils**
-demandent presque tous de viser une fenêtre et de cliquer, et
-**Bandicam** — dont j'adorais la simplicité « j'appuie, ça filme » — n'existe que
-sous Windows. Alors j'ai construit celui qui me manquait : la simplicité de
-Bandicam, sur Linux, qui marche vraiment sous Wayland.
+I just wanted to record my screen for tutorials. Surprisingly hard on Linux.
+**OBS Studio** is a full production studio — brilliant for streaming, wild overkill
+for pressing one button and recording three minutes; **the other tools** nearly all
+make you open a window, aim and click; and **Bandicam** — whose "press a key, it
+records" simplicity I loved — only exists on Windows. So I built the one I was
+missing: Bandicam's simplicity, on Linux, actually working under Wayland.
 
-Concrètement, aucun des bons enregistreurs (OBS, Kooha, GPU Screen Recorder…) ne
-fait *exactement* le bon geste pour faire des tutos vite fait :
+Concretely, none of the good recorders (OBS, Kooha, GPU Screen Recorder…) do
+*exactly* the right gesture for knocking out a quick tutorial:
 
-- **Une seule touche** pour démarrer **et** arrêter (`Super+R`). Pas de fenêtre à viser.
-- **Micro choisi automatiquement** selon un **ordre de préférence** : micro USB
-  dédié › webcam › micro interne. Tu branches ton bon micro, il est pris, point.
-- **Écran choisi automatiquement** : par défaut le portail GNOME (qui mémorise ton
-  choix), ou par **ordre de préférence de moniteurs** si tu préfères.
-- **Pause / reprise** (`Super+Shift+R`) sans casser la synchro audio.
-- **Montage automatique** à l'arrêt : la voix est recollée et normalisée dans le MP4.
+- **One single key** to start **and** stop (`Super+R`). No window to aim at.
+- **Mic picked automatically** by **preference order**: dedicated USB mic ›
+  webcam › built-in mic. Plug in your good mic, it gets used, done.
+- **Monitor picked automatically**: the GNOME portal by default (it remembers your
+  choice), or by **monitor preference order** if you'd rather.
+- **Pause / resume** (`Super+Shift+R`) without breaking audio sync.
+- **Automatic edit** on stop: your voice is stitched back in and normalised into the MP4.
 
-Sortie propre dans `~/Videos/tuto_AAAAMMJJ_HHMMSS.mp4`, prête à publier.
+Clean output in `~/Videos/tuto_YYYYMMDD_HHMMSS.mp4`, ready to publish.
 
 ---
 
-## Installation
+## Install
 
-lazycam est un **outil d'intégration système** (il pilote d'autres programmes et
-pose des raccourcis GNOME) : il s'installe donc sur l'hôte, pas en bac à sable.
+lazycam is a **system integration tool** (it drives other programs and registers
+GNOME shortcuts), so it installs on the host rather than in a sandbox.
 
-### Option A — dépôt APT *(recommandé)*
+### Option A — APT repository *(recommended)*
 
-Ajoute le dépôt une fois, puis `apt install` et les mises à jour suivent avec
-`apt upgrade` :
+Add the repository once, then `apt install`, and updates follow with `apt upgrade`:
 
 ```bash
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -78,30 +101,30 @@ echo "deb [arch=amd64,arm64 signed-by=/etc/apt/keyrings/lazycam.gpg] https://laz
 sudo apt update && sudo apt install lazycam
 ```
 
-### Option B — paquet `.deb` direct
+### Option B — direct `.deb` package
 
-[Télécharge le `.deb`](https://github.com/friteuseb/lazycam/releases/latest) puis :
+[Download the `.deb`](https://github.com/friteuseb/lazycam/releases/latest) then:
 
 ```bash
 sudo apt install ./lazycam_0.1.0_all.deb
 ```
 
-### Après l'installation (Option A ou B)
+### After installing (Option A or B)
 
-`apt` tire toutes les dépendances système. Restent **deux gestes côté
-utilisateur** (un paquet tourne en root et ne peut pas les faire) :
+`apt` pulls every system dependency. Two steps remain **on the user side** (a
+package runs as root and cannot do them for you):
 
 ```bash
-flatpak install -y flathub com.dec05eba.gpu_screen_recorder   # 1) le moteur de capture
-lazycam-shortcuts                                             # 2) activer Super+R
+flatpak install -y flathub com.dec05eba.gpu_screen_recorder   # 1) the capture engine
+lazycam-shortcuts                                             # 2) enable Super+R
 ```
 
-> **Pourquoi `lazycam-shortcuts` à part ?** Les raccourcis clavier sont stockés
-> dans dconf **par-utilisateur**. Le `postinst` d'un paquet s'exécute en root et
-> ne peut donc pas écrire dans *ta* session. La commande `lazycam-shortcuts`
-> (ou le bouton **« Activer »** dans `lazycam-config`) les pose dans ta session.
+> **Why is `lazycam-shortcuts` separate?** Keyboard shortcuts live in
+> **per-user** dconf. A package's `postinst` runs as root and therefore cannot
+> write into *your* session. The `lazycam-shortcuts` command (or the **"Enable"**
+> button in `lazycam-config`) registers them in your session.
 
-### Option C — depuis les sources (git)
+### Option C — from source (git)
 
 ```bash
 git clone https://github.com/friteuseb/lazycam.git
@@ -109,280 +132,279 @@ cd lazycam
 ./install.sh
 ```
 
-`install.sh` est **idempotent** (relançable sans rien casser) et fait tout d'un
-coup : vérifie les dépendances, propose d'installer le moteur, copie les scripts
-dans `~/.local/bin`, installe la GUI, puis pose les raccourcis Super+R **sans
-toucher** à tes autres raccourcis GNOME.
+`install.sh` is **idempotent** (safe to re-run) and does everything at once: checks
+dependencies, offers to install the engine, copies the scripts into `~/.local/bin`,
+installs the GUI, then registers the Super+R shortcuts **without touching** your
+other GNOME shortcuts.
 
-### Dépendances
+### Dependencies
 
-| Outil | Paquet Ubuntu | Rôle |
-|-------|---------------|------|
-| GPU Screen Recorder | `flatpak` + Flathub | moteur de capture vidéo |
-| `pw-record`, `pw-dump` | `pipewire-bin` | capture & détection audio |
-| `wpctl` | `wireplumber` | démuter le micro |
-| `ffmpeg` | `ffmpeg` | montage / filtres voix |
-| `jq` | `jq` | lecture de la config JSON |
+| Tool | Ubuntu package | Role |
+|------|----------------|------|
+| GPU Screen Recorder | `flatpak` + Flathub | video capture engine |
+| `pw-record`, `pw-dump` | `pipewire-bin` | audio capture & detection |
+| `wpctl` | `wireplumber` | unmute the mic |
+| `ffmpeg` | `ffmpeg` | editing / voice filters |
+| `jq` | `jq` | reading the JSON config |
 | `notify-send` | `libnotify-bin` | notifications |
-| `gsettings`, `gdbus` | `libglib2.0-bin` | raccourcis & détection écran |
-| GTK 4 + libadwaita | `python3-gi gir1.2-gtk-4.0 gir1.2-adw-1` | interface graphique |
+| `gsettings`, `gdbus` | `libglib2.0-bin` | shortcuts & monitor detection |
+| GTK 4 + libadwaita | `python3-gi gir1.2-gtk-4.0 gir1.2-adw-1` | graphical interface |
 
-> Le moteur **gpu-screen-recorder** n'est pas un paquet apt : il s'installe via
-> Flatpak (commande ci-dessus). C'est volontaire — c'est sa distribution officielle.
+> The **gpu-screen-recorder** engine is not an apt package: it installs via Flatpak
+> (command above). That's deliberate — it's the engine's official distribution.
 
 ---
 
-## Démarrage rapide
+## Quick start
 
 ```bash
-lazycam-config        # ouvre les réglages, branche ton micro, vérifie le niveau
+lazycam-config        # open the settings, plug in your mic, check the level
 ```
-Puis, n'importe où :
+Then, from anywhere:
 
-- **`Super + R`** → l'enregistrement démarre (notification « ● Démarré »).
-- Parle, montre ce que tu veux.
-- **`Super + R`** → stop : la vidéo et la voix sont montées, tu obtiens un MP4.
+- **`Super + R`** → recording starts (a "● Started" notification appears).
+- Talk, show whatever you want.
+- **`Super + R`** → stop: video and voice are edited together into an MP4.
 
 ---
 
-## Utilisation
+## Usage
 
-| Raccourci | Action |
-|-----------|--------|
-| `Super + R` | Démarrer / arrêter (puis montage automatique) |
-| `Super + Shift + R` | Pause / reprise |
+| Shortcut | Action |
+|----------|--------|
+| `Super + R` | Start / stop (then automatic edit) |
+| `Super + Shift + R` | Pause / resume |
 
-| Commande | Rôle |
-|----------|------|
-| `lazycam-config` | interface graphique de réglages |
-| `lazycam-shortcuts` | poser / retirer les raccourcis (`--remove`) |
-| `gsr-config.sh` | assistant **terminal** : choisir & tester le micro |
+| Command | Role |
+|---------|------|
+| `lazycam-config` | graphical settings interface |
+| `lazycam-shortcuts` | register / remove the shortcuts (`--remove`) |
+| `gsr-config.sh` | **terminal** wizard: pick & test the mic |
 
 ---
 
 ## Configuration
 
-Toute la configuration vit dans un seul fichier :
-`~/.config/lazycam/config.json`. Tu l'édites via l'interface graphique (conseillé)
-ou à la main.
+All configuration lives in a single file: `~/.config/lazycam/config.json`. Edit it
+through the graphical interface (recommended) or by hand.
 
-### L'interface graphique (`lazycam-config`)
+### The graphical interface (`lazycam-config`)
 
-Fenêtre GTK4 / libadwaita, lancée par la commande `lazycam-config` ou depuis le
-menu d'applications (**« lazycam »**). Barre du haut :
+A GTK4 / libadwaita window, launched by the `lazycam-config` command or from the
+applications menu (**"lazycam"**). Top bar:
 
-- **⏺ Filmer / ⏹ Arrêter** (à gauche) — démarre ou arrête l'enregistrement.
-- **💾 Appliquer** (à droite) — **sauvegarde** les réglages dans `config.json`.
+- **⏺ Record / ⏹ Stop** (left) — starts or stops the recording.
+- **💾 Apply** (right) — **saves** the settings to `config.json`.
 
-> ⚠️ Les changements ne sont écrits que quand tu cliques **Appliquer**.
+> ⚠️ Changes are only written when you click **Apply**.
 
-Sections :
+Sections:
 
-| Section | Ce que tu règles |
-|---------|------------------|
-| **Source vidéo** | Mode de capture, et l'ordre de préférence des écrans (mode Moniteur). |
-| **Entrée audio** | Ordre de préférence des micros (↑ ↓), test ▶ (4 s + réécoute), 🎙 niveau en direct, réduction de bruit, normalisation. |
-| **Enregistrement** | FPS, codec, qualité, dossier de sortie. |
-| **Aides tuto** | Afficher les touches pressées (clics : à venir). |
-| **Raccourcis clavier** | Activer / désactiver Super+R et Super+Shift+R. |
+| Section | What you set |
+|---------|--------------|
+| **Video source** | Capture mode, and the monitor preference order (Monitor mode). |
+| **Audio input** | Mic preference order (↑ ↓), test ▶ (4 s + playback), 🎙 live level, noise reduction, normalisation. |
+| **Recording** | FPS, codec, quality, output folder. |
+| **Tutorial helpers** | Show pressed keys (clicks: coming later). |
+| **Keyboard shortcuts** | Enable / disable Super+R and Super+Shift+R. |
 
-Pour réordonner une liste : les flèches **↑ ↓** de chaque ligne. Pour en retirer
-un : 🗑. Pour en ajouter un détecté : **＋**.
+To reorder a list, use the **↑ ↓** arrows on each row. To remove an entry: 🗑. To
+add a detected one: **＋**.
 
-### Le fichier `config.json`
+### The `config.json` file
 
 ```jsonc
 {
-  // Ordre de préférence des micros : motifs (grep -iE) testés sur le nom PipeWire.
-  // Le 1er micro présent qui correspond est utilisé.
+  // Mic preference order: patterns (grep -iE) matched against the PipeWire name.
+  // The first mic present that matches is used.
   "mic_order": ["Amazon_USB_Streaming_Mic", "Cam_Sync|Creative", "alsa_input\\.pci.*analog"],
 
-  // Mode de capture vidéo : "portal" | "monitor" | "focused" | "region"
+  // Video capture mode: "portal" | "monitor" | "focused" | "region"
   "capture_mode": "portal",
 
-  // Ordre de préférence des écrans (mode "monitor") : motifs testés sur le nom du moniteur.
+  // Monitor preference order ("monitor" mode): patterns matched against the monitor name.
   "screen_order": ["DP", "HDMI", "eDP"],
 
-  // Rectangle pour le mode "region" (largeurxhauteur+X+Y). Vide sinon.
+  // Rectangle for "region" mode (widthxheight+X+Y). Empty otherwise.
   "region": "",
 
   "fps": 30,                 // 24 | 30 | 60
-  "codec": "h264",           // h264 (compatible partout) | hevc | av1
+  "codec": "h264",           // h264 (compatible everywhere) | hevc | av1
   "quality": "very_high",    // medium | high | very_high | ultra
-  "outdir": "~/Videos",      // dossier de sortie
+  "outdir": "~/Videos",      // output folder
 
-  "denoise": false,          // réduction de bruit (highpass + afftdn)
-  "normalize": true,         // normalisation du volume (loudnorm)
+  "denoise": false,          // noise reduction (highpass + afftdn)
+  "normalize": true,         // volume normalisation (loudnorm)
 
-  "show_keys": false,        // afficher les touches pressées (showmethekey)
-  "show_clicks": false       // (à venir : nécessite une extension GNOME)
+  "show_keys": false,        // show pressed keys (showmethekey)
+  "show_clicks": false       // (coming later: needs a GNOME extension)
 }
 ```
 
-**Sans fichier de config**, lazycam applique des valeurs par défaut identiques à
-ce tableau → comportement « sans surprise », mode Portail.
+**With no config file**, lazycam applies defaults identical to this table → a
+"no surprises" behaviour, Portal mode.
 
-#### Modes de capture vidéo
+#### Video capture modes
 
-| Mode | Comportement | Remarque |
-|------|--------------|----------|
-| `portal` *(défaut)* | Le portail GNOME demande quel écran/fenêtre partager au 1er usage, puis **mémorise** (un jeton par état dock branché / débranché). | Le plus fiable sur GNOME Wayland. |
-| `monitor` | Filme le **1er moniteur présent** selon `screen_order` (capture directe `-w <nom>`). | Pas de pop-up. Choisit tout seul l'écran de la station si branchée. |
-| `focused` | Filme la **fenêtre active**. | |
-| `region` | Filme le rectangle `region` (`LxH+X+Y`). | Saisie manuelle (la sélection à la souris n'est pas encore implémentée). |
+| Mode | Behaviour | Note |
+|------|-----------|------|
+| `portal` *(default)* | The GNOME portal asks which screen/window to share on first use, then **remembers** (one token per docked / undocked state). | The most reliable option on GNOME Wayland. |
+| `monitor` | Records the **first monitor present** according to `screen_order` (direct `-w <name>` capture). | No pop-up. Picks the desk monitor by itself when docked. |
+| `focused` | Records the **active window**. | |
+| `region` | Records the `region` rectangle (`WxH+X+Y`). | Entered manually (mouse selection is not implemented yet). |
 
-#### Filtres voix
+#### Voice filters
 
-- `denoise: true` ajoute `highpass=f=90,afftdn=nf=-25` (coupe les graves parasites
-  + débruitage spectral).
-- `normalize: true` ajoute `loudnorm=I=-16:TP=-1.5:LRA=11` (volume homogène, niveau
-  broadcast). Les deux se cumulent si activés.
+- `denoise: true` adds `highpass=f=90,afftdn=nf=-25` (cuts low rumble + spectral
+  denoising).
+- `normalize: true` adds `loudnorm=I=-16:TP=-1.5:LRA=11` (even volume, broadcast
+  level). Both stack when enabled.
 
-### Logique de choix du micro et de l'écran
+### How the mic and monitor are picked
 
-C'est le cœur de lazycam. Au démarrage d'un enregistrement :
+This is the heart of lazycam. When a recording starts:
 
 ```
-Micro :  pour chaque motif de mic_order (dans l'ordre)
-           → existe-t-il une source audio PipeWire dont le nom matche ?
-             oui → on prend celle-là, on s'arrête.
-         aucun ne matche → micro par défaut du système.
+Mic:     for each pattern in mic_order (in order)
+           → is there a PipeWire audio source whose name matches?
+             yes → use that one, stop here.
+         nothing matches → system default mic.
 
-Écran :  mode "monitor" → pour chaque motif de screen_order (dans l'ordre)
-                            → un moniteur présent matche-t-il ? oui → on le filme.
-         mode "portal"  → jeton mémorisé selon dock branché ou non.
+Monitor: "monitor" mode → for each pattern in screen_order (in order)
+                            → does a connected monitor match? yes → record it.
+         "portal" mode  → token remembered per docked / undocked state.
 ```
 
-Les motifs sont des **expressions régulières** (`grep -iE`, insensible à la casse)
-testées sur le `node.name` PipeWire du micro ou le nom du moniteur (`eDP-1`,
-`DP-2`…). Exemple : `Cam_Sync|Creative` capte la webcam quel que soit son libellé
-exact ; `alsa_input\.pci.*analog` capte l'entrée analogique interne.
+Patterns are **regular expressions** (`grep -iE`, case-insensitive) matched against
+the mic's PipeWire `node.name` or the monitor name (`eDP-1`, `DP-2`…). For example
+`Cam_Sync|Creative` catches the webcam whatever its exact label is;
+`alsa_input\.pci.*analog` catches the internal analog input.
 
-**Conséquence pratique** : tu listes tes appareils du plus voulu au moins voulu,
-et lazycam prend toujours le meilleur **disponible** à l'instant T. Tu débranches
-le micro USB → il bascule sur la webcam, puis sur l'interne. Zéro réglage à refaire.
+**What this means in practice**: you list your devices from most to least wanted,
+and lazycam always takes the best one **available** right now. Unplug the USB mic →
+it falls back to the webcam, then to the built-in one. Nothing to reconfigure.
 
 ---
 
-## Comment ça marche
+## How it works
 
-GPU Screen Recorder (sandbox Flatpak) ne capte **que l'écran** : son bac à sable
-PipeWire ne laisse passer que les sorties. lazycam capte donc la **voix
-séparément** et recolle tout au montage.
+GPU Screen Recorder (Flatpak sandbox) captures **the screen only**: its PipeWire
+sandbox only lets outputs through. So lazycam captures the **voice separately** and
+stitches everything back together at edit time.
 
 ```
   Super+R (start)
         │
-        ├─► gpu-screen-recorder  ──►  .rec_<stamp>.video.mp4   (écran, sans audio)
+        ├─► gpu-screen-recorder  ──►  .rec_<stamp>.video.mp4   (screen, no audio)
         │
-        └─► pw-record (micro)    ──►  .rec_<stamp>.mic.0.flac  (voix, segment 0)
-                                       (pause → ferme le segment ; reprise → segment 1, 2…)
+        └─► pw-record (mic)      ──►  .rec_<stamp>.mic.0.flac  (voice, segment 0)
+                                       (pause → close the segment; resume → segment 1, 2…)
 
   Super+R (stop)
         │
-        └─► ffmpeg : concat des segments audio  +  filtres voix (denoise/loudnorm)
-                     muxés avec la vidéo  ──►  ~/Videos/tuto_<stamp>.mp4
+        └─► ffmpeg: concat the audio segments  +  voice filters (denoise/loudnorm)
+                    muxed with the video  ──►  ~/Videos/tuto_<stamp>.mp4
 ```
 
-Pourquoi des **segments audio** ? Parce que `pw-record` ne sait pas se mettre en
-pause : à chaque pause on **clôt** le segment courant, à la reprise on en **ouvre**
-un nouveau. Au stop, `ffmpeg` les recolle dans l'ordre — la vidéo, elle, gère sa
-propre pause via `SIGUSR2`. Les deux flux restent synchronisés.
+Why **audio segments**? Because `pw-record` cannot pause: on each pause we **close**
+the current segment, on resume we **open** a new one. On stop, `ffmpeg` stitches them
+back in order — the video handles its own pause through `SIGUSR2`. Both streams stay
+in sync.
 
-| Script | Rôle |
+| Script | Role |
 |--------|------|
-| `gsr-toggle.sh` | start / stop + montage final |
-| `gsr-pause.sh` | pause / reprise (vidéo via signal, audio par segments) |
-| `gsr-common.sh` | réglages & fonctions partagés : lecture de la config, choix micro (`pick_mic`), choix écran (`video_capture_args`), état |
-| `gsr-config.sh` | assistant terminal pour choisir & tester le micro |
-| `lazycam-shortcuts` | pose / retire les raccourcis GNOME (idempotent) |
+| `gsr-toggle.sh` | start / stop + final edit |
+| `gsr-pause.sh` | pause / resume (video via signal, audio via segments) |
+| `gsr-common.sh` | shared settings & functions: config reading, mic choice (`pick_mic`), monitor choice (`video_capture_args`), state |
+| `gsr-config.sh` | terminal wizard to pick & test the mic |
+| `lazycam-shortcuts` | registers / removes the GNOME shortcuts (idempotent) |
 
 ---
 
-## Aides tuto
+## Tutorial helpers
 
-- **Touches pressées** : active *« Afficher les touches pressées »* dans
-  `lazycam-config`. Nécessite [showmethekey](https://github.com/AlynxZhou/showmethekey) :
-  `flatpak install -y flathub one.alynx.showmethekey`. lazycam le lance au
-  démarrage de l'enregistrement et le coupe à l'arrêt.
-- **Mise en évidence des clics** : pas encore disponible — sous Wayland ça
-  demande une extension GNOME Shell, non livrée pour l'instant.
+- **Pressed keys**: enable *"Show pressed keys"* in `lazycam-config`. Requires
+  [showmethekey](https://github.com/AlynxZhou/showmethekey):
+  `flatpak install -y flathub one.alynx.showmethekey`. lazycam starts it when the
+  recording starts and stops it when you stop.
+- **Click highlighting**: not available yet — under Wayland this needs a GNOME Shell
+  extension, which isn't shipped for now.
 
-> Sous Wayland, la capture clavier globale est volontairement verrouillée pour la
-> sécurité : c'est pour ça qu'on délègue à un outil dédié plutôt que de l'implémenter.
-
----
-
-## Fichiers & emplacements
-
-| Chemin | Contenu |
-|--------|---------|
-| `~/.config/lazycam/config.json` | ta configuration |
-| `~/.config/gsr-tokens/` | jetons portail (mode `portal`) |
-| `~/Videos/tuto_*.mp4` | tes enregistrements |
-| `$XDG_RUNTIME_DIR/gsr-toggle.state` | état de l'enregistrement en cours |
-| **Installé via `.deb`** | `/usr/bin/` (scripts), `/usr/share/lazycam/` (GUI) |
-| **Installé via `install.sh`** | `~/.local/bin/` (scripts), `~/.local/share/lazycam/` (GUI) |
+> Under Wayland, global keyboard capture is deliberately locked down for security:
+> that's why we delegate to a dedicated tool rather than implementing it ourselves.
 
 ---
 
-## Dépannage
+## Files & locations
 
-| Symptôme | Cause probable / solution |
-|----------|---------------------------|
-| **Pas de son dans la vidéo** | Mauvais micro choisi ou micro muet. Ouvre `lazycam-config`, teste (▶) le micro voulu, vérifie son ordre. lazycam démute automatiquement le micro choisi. |
-| **`Super+R` ne fait rien** | Raccourcis non posés. Lance `lazycam-shortcuts` (ou bouton « Activer » dans la GUI). Vérifie qu'aucun autre logiciel ne capte `Super+R`. |
-| **Le mauvais micro est pris** | Réordonne `mic_order` (le 1er présent gagne). Branché trop tard ? Clique **« Re-détecter »** dans la GUI. |
-| **Pop-up de partage d'écran à chaque fois** | Tu es en mode `portal` et le jeton n'a pas été mémorisé, ou tu as changé d'écran. Refais le choix une fois, ou passe en mode `monitor`. |
-| **La GUI ne s'ouvre pas** | GTK4/libadwaita manquant : `sudo apt install python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`. |
-| **Doublons de raccourcis** | Tu as lancé `lazycam-shortcuts` depuis un autre dossier que celui des scripts. `lazycam-shortcuts --remove` puis relance la **bonne** copie (celle installée). |
-
----
-
-## Désinstallation
-
-- **Paquet `.deb`** : `sudo apt remove lazycam`
-- **Sources** : `./uninstall.sh` (retire raccourcis, GUI, icône ; te demande pour
-  les scripts ; **garde** ta config et tes vidéos).
+| Path | Contents |
+|------|----------|
+| `~/.config/lazycam/config.json` | your configuration |
+| `~/.config/gsr-tokens/` | portal tokens (`portal` mode) |
+| `~/Videos/tuto_*.mp4` | your recordings |
+| `$XDG_RUNTIME_DIR/gsr-toggle.state` | state of the running recording |
+| **Installed via `.deb`** | `/usr/bin/` (scripts), `/usr/share/lazycam/` (GUI) |
+| **Installed via `install.sh`** | `~/.local/bin/` (scripts), `~/.local/share/lazycam/` (GUI) |
 
 ---
 
-## Développement
+## Troubleshooting
+
+| Symptom | Likely cause / fix |
+|---------|--------------------|
+| **No sound in the video** | Wrong mic picked, or muted mic. Open `lazycam-config`, test (▶) the mic you want, check its order. lazycam automatically unmutes the chosen mic. |
+| **`Super+R` does nothing** | Shortcuts not registered. Run `lazycam-shortcuts` (or the "Enable" button in the GUI). Check that no other software grabs `Super+R`. |
+| **The wrong mic is picked** | Reorder `mic_order` (the first one present wins). Plugged in too late? Click **"Re-detect"** in the GUI. |
+| **Screen-share pop-up every time** | You're in `portal` mode and the token wasn't remembered, or you changed monitor. Make the choice once more, or switch to `monitor` mode. |
+| **The GUI won't open** | GTK4/libadwaita missing: `sudo apt install python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`. |
+| **Duplicate shortcuts** | You ran `lazycam-shortcuts` from a folder other than the installed scripts. Run `lazycam-shortcuts --remove`, then re-run the **installed** copy. |
+
+---
+
+## Uninstall
+
+- **`.deb` package**: `sudo apt remove lazycam`
+- **From source**: `./uninstall.sh` (removes shortcuts, GUI and icon; asks about the
+  scripts; **keeps** your config and your videos).
+
+---
+
+## Development
 
 ```
-bin/        scripts moteur (bash) + lazycam-shortcuts
-gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (logique pure, testable)
-data/       icône + fichier .desktop
+bin/        engine scripts (bash) + lazycam-shortcuts
+gui/        lazycam-gui.py (GTK4) + lazycam_backend.py (pure, testable logic)
+data/       icon + .desktop file
 packaging/  build-deb.sh + update-apt-repo.sh
-docs/       site web (GitHub Pages) + docs/apt/ (dépôt APT)
+docs/       website (GitHub Pages, EN at /, FR at /fr/) + docs/apt/ (APT repository)
 install.sh / uninstall.sh
 ```
 
-`gui/lazycam_backend.py` n'importe pas GTK : tu peux le tester seul (détection des
-appareils, lecture de la config, test micro) sans environnement graphique.
+`gui/lazycam_backend.py` does not import GTK: you can test it on its own (device
+detection, config reading, mic test) with no graphical environment.
 
-### Publier une nouvelle version
+### Publishing a new release
 
 ```bash
-# 1. construire le paquet
+# 1. build the package
 ./packaging/build-deb.sh 0.2.0           # → dist/lazycam_0.2.0_all.deb
 
-# 2. régénérer + resigner le dépôt APT
-./packaging/update-apt-repo.sh           # → docs/apt/ (signé)
+# 2. regenerate + re-sign the APT repository
+./packaging/update-apt-repo.sh           # → docs/apt/ (signed)
 
-# 3. publier
-git add docs/apt && git commit -m "release 0.2.0" && git push   # GitHub Pages sert le dépôt
+# 3. publish
+git add docs/apt && git commit -m "release 0.2.0" && git push   # GitHub Pages serves the repo
 gh release create v0.2.0 dist/lazycam_0.2.0_all.deb --title "lazycam v0.2.0"
 ```
 
-> 🔑 **Clé de signature du dépôt** : la clé privée vit dans `~/.lazycam-apt-gnupg`
-> (hors du dépôt git, **jamais commitée**). **Sauvegarde ce dossier** : sans lui,
-> tu ne peux plus signer de mise à jour et les utilisateurs devront ré-importer
-> une nouvelle clé. La clé publique distribuée est `docs/apt/lazycam.gpg`.
+> 🔑 **Repository signing key**: the private key lives in `~/.lazycam-apt-gnupg`
+> (outside the git repository, **never committed**). **Back that folder up**: without
+> it you can no longer sign an update, and users would have to import a new key. The
+> distributed public key is `docs/apt/lazycam.gpg`.
 
 ---
 
-## Licence
+## License
 
-[GPL-3.0](LICENSE) — cohérent avec GPU Screen Recorder, le moteur sous-jacent.
-Merci à [dec05eba](https://git.dec05eba.com/gpu-screen-recorder/) pour ce moteur.
+[GPL-3.0](LICENSE) — consistent with GPU Screen Recorder, the underlying engine.
+Thanks to [dec05eba](https://git.dec05eba.com/gpu-screen-recorder/) for that engine.
