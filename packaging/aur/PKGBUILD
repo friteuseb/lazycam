@@ -5,7 +5,7 @@
 # It rewrites both this file and .SRCINFO from the published git tag.
 
 pkgname=lazycam
-pkgver=0.2.0
+pkgver=0.2.1
 pkgrel=1
 pkgdesc="One-key screen recorder for GNOME on Wayland: press Super+R, it records screen and voice; press again, it is edited"
 arch=('any')
@@ -25,7 +25,7 @@ depends=('bash'
          'gpu-screen-recorder')
 optdepends=('showmethekey: on-screen overlay of the keys you press while recording')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('a8b04f0c86f2dd43c4bef2230502ea2c47edb71c93968b4186d9d2b1e77a4af3')
+sha256sums=('d08110052582b074c72b66243b7a9e38f319d6bd69405ec6a9dd673fb237a9b5')
 
 package() {
     cd "$srcdir/$pkgname-$pkgver"
