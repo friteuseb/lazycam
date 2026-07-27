@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 # build-deb.sh — construit le paquet Debian/Ubuntu lazycam dans dist/.
-# Usage : ./packaging/build-deb.sh [version]   (défaut : 0.2.0)
+# Usage : ./packaging/build-deb.sh [version]   (défaut : 0.2.1)
 #
 set -eu
 
-VERSION="${1:-0.2.0}"
+VERSION="${1:-0.2.1}"
 ARCH=all
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PKG="lazycam"

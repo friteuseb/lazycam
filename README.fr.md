@@ -106,7 +106,7 @@ sudo apt update && sudo apt install lazycam
 [Télécharge le `.deb`](https://github.com/friteuseb/lazycam/releases/latest) puis :
 
 ```bash
-sudo apt install ./lazycam_0.2.0_all.deb
+sudo apt install ./lazycam_0.2.1_all.deb
 ```
 
 ### Après l'installation (Option A ou B)
@@ -427,14 +427,14 @@ appareils, lecture de la config, test micro) sans environnement graphique.
 
 ```bash
 # 1. construire le paquet
-./packaging/build-deb.sh 0.2.0           # → dist/lazycam_0.2.0_all.deb
+./packaging/build-deb.sh 0.2.1           # → dist/lazycam_0.2.1_all.deb
 
 # 2. régénérer + resigner le dépôt APT
 ./packaging/update-apt-repo.sh           # → docs/apt/ (signé)
 
 # 3. publier
-git add docs/apt && git commit -m "release 0.2.0" && git push   # GitHub Pages sert le dépôt
-gh release create v0.2.0 dist/lazycam_0.2.0_all.deb --title "lazycam v0.2.0"
+git add docs/apt && git commit -m "release 0.2.1" && git push   # GitHub Pages sert le dépôt
+gh release create v0.2.1 dist/lazycam_0.2.1_all.deb --title "lazycam v0.2.1"
 ```
 
 > 🔑 **Clé de signature du dépôt** : la clé privée vit dans `~/.lazycam-apt-gnupg`
@@ -464,8 +464,8 @@ lui-même les binaires — d'où l'arborescence `debian/` (`3.0 (native)`,
 sudo apt install devscripts debhelper dput      # le script ne les installe pas
 export LAZYCAM_PPA_KEY=<keyid>                  # une clé enregistrée sur Launchpad,
                                                 # PAS celle de ~/.lazycam-apt-gnupg
-./packaging/build-ppa.sh 0.2.0 noble jammy      # → dist/ppa/
-dput ppa:friteuseb/lazycam dist/ppa/lazycam_0.2.0~noble1_source.changes
+./packaging/build-ppa.sh 0.2.1 noble            # → dist/ppa/ (noble+ : libadwaita 1.4 requise)
+dput ppa:cyril-wolfangel/lazycam dist/ppa/lazycam_0.2.1~noble1_source.changes
 ```
 
 Avant le premier envoi il faut un compte Launchpad, une clé GPG enregistrée dessus,

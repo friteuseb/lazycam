@@ -20,7 +20,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PPA="${LAZYCAM_PPA:-ppa:friteuseb/lazycam}"
+PPA="${LAZYCAM_PPA:-ppa:cyril-wolfangel/lazycam}"
 OUT="$ROOT/dist/ppa"
 
 [ $# -ge 2 ] || {
