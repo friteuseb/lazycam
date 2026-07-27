@@ -67,7 +67,7 @@ Version: $VERSION
 Architecture: $ARCH
 Maintainer: Cyril Wolfangel <cyril.wolfangel@gmail.com>
 Installed-Size: $INSTALLED_KB
-Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1, jq, ffmpeg, pipewire-bin, wireplumber, libnotify-bin, libglib2.0-bin
+Depends: python3, python3-gi, gir1.2-gtk-4.0, gir1.2-adw-1 (>= 1.4), jq, ffmpeg, pipewire-bin, wireplumber, libnotify-bin, libglib2.0-bin
 Recommends: flatpak
 Section: video
 Priority: optional

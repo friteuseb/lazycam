@@ -28,8 +28,8 @@ A thin layer on top of [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen
 
 | | |
 |---|---|
-| **Distribution** | Ubuntu / Debian (`.deb` package, `all` architecture) |
-| **Desktop** | GNOME — the `Super+R` shortcut is registered through GNOME settings |
+| **Distribution** | Ubuntu 24.04+ or Debian 13+ (`.deb` package, `all` architecture) |
+| **Desktop** | GNOME with libadwaita 1.4+ — the settings window needs it, and the `Super+R` shortcut is registered through GNOME settings |
 | **Session** | Built and tested on **Wayland**. Not tested on KDE, Xfce or X11. |
 | **CPU** | amd64 · arm64 |
 

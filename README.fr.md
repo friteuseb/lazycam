@@ -28,8 +28,8 @@ Surcouche à [GPU Screen Recorder](https://git.dec05eba.com/gpu-screen-recorder/
 
 | | |
 |---|---|
-| **Distribution** | Ubuntu / Debian (paquet `.deb`, architecture `all`) |
-| **Bureau** | GNOME — le raccourci `Super+R` est posé via les réglages GNOME |
+| **Distribution** | Ubuntu 24.04+ ou Debian 13+ (paquet `.deb`, architecture `all`) |
+| **Bureau** | GNOME avec libadwaita 1.4+ — la fenêtre de réglages en a besoin, et le raccourci `Super+R` est posé via les réglages GNOME |
 | **Session** | Conçu et testé sous **Wayland**. Non testé sous KDE, Xfce ou X11. |
 | **CPU** | amd64 · arm64 |
 
